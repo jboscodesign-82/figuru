@@ -28,11 +28,11 @@
     "scheme": "stickerscan",
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "baseUrl": "/figuru"
+      "output": "static"
     },
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "baseUrl": "/figuru"
     }
   }
 }
