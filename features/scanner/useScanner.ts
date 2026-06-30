@@ -53,6 +53,7 @@ export function useScanner(cameraRef: CameraRef) {
       if (!uri) return;
 
       const detected = await recognizer.recognize(uri);
+      console.log('[Scanner] OCR detectou:', detected.length, 'figurinhas', detected.map(d => `${d.number} ${d.playerName}`));
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
       if (mountedRef.current) updateDetections(annotated);
       if (annotated.length > 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
