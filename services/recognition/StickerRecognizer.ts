@@ -1,20 +1,16 @@
 import { IStickerRecognizer } from '@/types';
 import { MockStickerRecognizer } from './MockStickerRecognizer';
+import { TesseractRecognizer } from './TesseractRecognizer';
 
 export type RecognizerType = 'mock' | 'tesseract' | 'mlkit' | 'tensorflow';
 
-/**
- * Factory — change `type` here to swap the recognition engine globally.
- * All consumers depend on IStickerRecognizer so nothing else needs to change.
- */
-export function createStickerRecognizer(type: RecognizerType = 'mock'): IStickerRecognizer {
+export function createStickerRecognizer(type: RecognizerType = 'tesseract'): IStickerRecognizer {
   switch (type) {
+    case 'tesseract':
+      return new TesseractRecognizer();
     case 'mock':
       return new MockStickerRecognizer();
-    // TODO: case 'tesseract': return new TesseractRecognizer();
-    // TODO: case 'mlkit':     return new MLKitRecognizer();
-    // TODO: case 'tensorflow':return new TFLiteRecognizer();
     default:
-      return new MockStickerRecognizer();
+      return new TesseractRecognizer();
   }
 }

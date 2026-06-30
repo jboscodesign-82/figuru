@@ -1,60 +1,75 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { CameraView } from 'expo-camera';
 import { createStickerRecognizer } from '@/services/recognition/StickerRecognizer';
-import { MockStickerRecognizer } from '@/services/recognition/MockStickerRecognizer';
+import { TesseractRecognizer } from '@/services/recognition/TesseractRecognizer';
 import useAlbumStore from '@/store/useAlbumStore';
 import useScannerStore from '@/store/useScannerStore';
 
-const recognizer = createStickerRecognizer('mock');
-const FRAME_INTERVAL_MS = 500;
+const recognizer = createStickerRecognizer('tesseract');
 
-export function useScanner() {
+export function useScanner(cameraRef: React.RefObject<CameraView>) {
   const { isOwned, markOwned } = useAlbumStore();
-  const { detectedStickers, newStickers, updateDetections, clearDetections } =
-    useScannerStore();
+  const { detectedStickers, newStickers, updateDetections, clearDetections } = useScannerStore();
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [ocrReady, setOcrReady] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const mountedRef = useRef(true);
 
-  const startScanning = useCallback(() => {
-    if (intervalRef.current) return;
-    intervalRef.current = setInterval(async () => {
-      const detected = await recognizer.recognize(null);
-      const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
-      updateDetections(annotated);
-    }, FRAME_INTERVAL_MS);
-  }, [isOwned, updateDetections]);
-
-  const stopScanning = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+  // Initialize Tesseract worker on mount
+  useEffect(() => {
+    mountedRef.current = true;
+    if (recognizer instanceof TesseractRecognizer) {
+      recognizer.init().then(() => {
+        if (mountedRef.current) setOcrReady(true);
+      });
     }
-    if (recognizer instanceof MockStickerRecognizer) recognizer.clear();
-    clearDetections();
+    return () => {
+      mountedRef.current = false;
+      if (recognizer instanceof TesseractRecognizer) recognizer.terminate();
+      clearDetections();
+    };
   }, [clearDetections]);
 
-  /** Trigger a simulated scan (mock mode only) */
-  const simulateScan = useCallback(() => {
-    if (recognizer instanceof MockStickerRecognizer) recognizer.simulate();
-  }, []);
+  /** Take a photo and run OCR on it */
+  const scan = useCallback(async () => {
+    if (!cameraRef.current || scanning) return;
+    setScanning(true);
+    clearDetections();
+    try {
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.8,
+        base64: false,
+      });
+      if (!photo?.uri) return;
+
+      const detected = await recognizer.recognize(photo.uri);
+      const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
+      if (mountedRef.current) updateDetections(annotated);
+
+      if (annotated.length > 0) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      }
+    } finally {
+      if (mountedRef.current) setScanning(false);
+    }
+  }, [cameraRef, scanning, isOwned, updateDetections, clearDetections]);
 
   const addNewStickers = useCallback(() => {
     const ids = newStickers.map((s) => s.stickerId);
     markOwned(ids);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    stopScanning();
+    clearDetections();
     router.replace('/');
-  }, [newStickers, markOwned, stopScanning]);
-
-  useEffect(() => () => stopScanning(), [stopScanning]);
+  }, [newStickers, markOwned, clearDetections]);
 
   return {
+    ocrReady,
+    scanning,
     detectedStickers,
     newStickers,
-    startScanning,
-    stopScanning,
-    simulateScan,
+    scan,
     addNewStickers,
   };
 }
