@@ -25,28 +25,31 @@ const ALL = albumData.pages.flatMap((p) =>
  * is a one-line change in services/recognition/StickerRecognizer.ts.
  */
 export class MockStickerRecognizer implements IStickerRecognizer {
-  // Cache detections for 800 ms to avoid UI thrashing
-  private lastAt = 0;
+  private triggered = false;
   private cached: DetectedSticker[] = [];
 
-  async recognize(_frame: unknown): Promise<DetectedSticker[]> {
-    const now = Date.now();
-    if (now - this.lastAt < 800) return this.cached;
-    this.lastAt = now;
-
-    const count = 2 + Math.floor(Math.random() * 4);
+  /** Call this to simulate finding stickers (used by the UI "Simular" button) */
+  simulate() {
+    const count = 2 + Math.floor(Math.random() * 3);
     const shuffled = [...ALL].sort(() => Math.random() - 0.5).slice(0, count);
-
     this.cached = shuffled.map((s, i) => ({
       stickerId: s.id,
       number: s.number,
       playerName: s.playerName,
       country: s.country,
       confidence: 0.75 + Math.random() * 0.25,
-      isOwned: false, // annotated by useScanner after store lookup
+      isOwned: false,
       boundingBox: buildBBox(i, count),
     }));
+    this.triggered = true;
+  }
 
+  clear() {
+    this.cached = [];
+    this.triggered = false;
+  }
+
+  async recognize(_frame: unknown): Promise<DetectedSticker[]> {
     return this.cached;
   }
 }

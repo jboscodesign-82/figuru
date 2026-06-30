@@ -25,7 +25,7 @@ import { C } from '@/constants/colors';
  */
 export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const { detectedStickers, newStickers, startScanning, stopScanning, addNewStickers } =
+  const { detectedStickers, newStickers, startScanning, stopScanning, simulateScan, addNewStickers } =
     useScanner();
 
   useEffect(() => {
@@ -109,6 +109,14 @@ export function ScannerScreen() {
         <View style={[styles.corner, styles.tr]} />
         <View style={[styles.corner, styles.bl]} />
         <View style={[styles.corner, styles.br]} />
+      </View>
+
+      {/* Prototype banner + simulate button */}
+      <View style={styles.protoBar}>
+        <Text style={styles.protoLabel}>🔬 Protótipo — reconhecimento simulado</Text>
+        <Pressable style={styles.simulateBtn} onPress={simulateScan}>
+          <Text style={styles.simulateBtnText}>Simular escanear</Text>
+        </Pressable>
       </View>
 
       {/* Add button — appears when new stickers are found */}
@@ -198,6 +206,37 @@ const styles = StyleSheet.create({
   pillBlue: { backgroundColor: 'rgba(76,201,240,0.25)' },
   pillText: { color: '#fff', fontSize: 12, fontWeight: '600' },
   pillTextBlue: { color: C.accentBlue },
+
+  // Prototype bar
+  protoBar: {
+    position: 'absolute',
+    bottom: 120,
+    left: 16,
+    right: 16,
+    alignItems: 'center',
+    gap: 10,
+  },
+  protoLabel: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  simulateBtn: {
+    backgroundColor: C.accentBlue,
+    paddingHorizontal: 28,
+    paddingVertical: 12,
+    borderRadius: 24,
+    shadowColor: C.accentBlue,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  simulateBtnText: {
+    color: '#000',
+    fontWeight: '700',
+    fontSize: 15,
+  },
 
   // Viewfinder corners
   viewfinder: {
