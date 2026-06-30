@@ -1,9 +1,11 @@
-export type Position = 'GK' | 'DF' | 'MF' | 'FW';
+export type Position = 'GK' | 'DEF' | 'MID' | 'FWD' | null;
+export type StickerType = 'player' | 'badge' | 'team_photo' | 'special';
 
 export interface Sticker {
   id: string;
   number: number;
   playerName: string;
+  type: StickerType;
   position: Position;
   imageUrl?: string;
 }
@@ -12,6 +14,7 @@ export interface Country {
   code: string;
   name: string;
   flag: string;
+  group?: string | null;
   stickers: Sticker[];
 }
 

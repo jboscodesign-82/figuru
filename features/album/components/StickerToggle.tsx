@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Sticker } from '@/types';
 import { C } from '@/constants/colors';
 
@@ -10,17 +10,35 @@ interface Props {
 }
 
 export function StickerToggle({ sticker, owned, onToggle }: Props) {
+  const isBadge = sticker.type === 'badge';
+  const isTeamPhoto = sticker.type === 'team_photo';
+  const isSpecial = sticker.type === 'special';
+  const isNonPlayer = isBadge || isTeamPhoto || isSpecial;
+
+  const icon = isBadge ? '🛡️' : isTeamPhoto ? '📸' : isSpecial ? '⭐' : null;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={() => onToggle(sticker.id)}
-      style={[styles.chip, owned && styles.chipOwned]}
+      style={[
+        styles.chip,
+        owned && styles.chipOwned,
+        isNonPlayer && styles.chipSpecial,
+        owned && isNonPlayer && styles.chipSpecialOwned,
+      ]}
     >
-      <Text style={[styles.number, owned && styles.numberOwned]}>
-        {owned ? '✓' : sticker.number}
-      </Text>
+      {icon ? (
+        <Text style={styles.icon}>{owned ? '✓' : icon}</Text>
+      ) : (
+        <Text style={[styles.number, owned && styles.numberOwned]}>
+          {owned ? '✓' : sticker.number}
+        </Text>
+      )}
       <Text style={[styles.name, owned && styles.nameOwned]} numberOfLines={1}>
-        {sticker.playerName.split(' ').pop()}
+        {isNonPlayer
+          ? sticker.playerName
+          : sticker.playerName.split(' ').pop()}
       </Text>
     </TouchableOpacity>
   );
@@ -42,6 +60,15 @@ const styles = StyleSheet.create({
     borderColor: C.success,
     backgroundColor: 'rgba(74,222,128,0.12)',
   },
+  chipSpecial: {
+    borderColor: C.accent,
+    backgroundColor: 'rgba(255,215,0,0.08)',
+    width: 80,
+  },
+  chipSpecialOwned: {
+    borderColor: C.success,
+    backgroundColor: 'rgba(74,222,128,0.12)',
+  },
   number: {
     fontSize: 13,
     fontWeight: '700',
@@ -49,6 +76,9 @@ const styles = StyleSheet.create({
   },
   numberOwned: {
     color: C.success,
+  },
+  icon: {
+    fontSize: 16,
   },
   name: {
     fontSize: 9,

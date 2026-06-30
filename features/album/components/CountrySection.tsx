@@ -17,7 +17,12 @@ export function CountrySection({ country, ownedIds, onToggle }: Props) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.flag}>{country.flag}</Text>
-        <Text style={styles.name}>{country.name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{country.name}</Text>
+          {country.group ? (
+            <Text style={styles.group}>Grupo {country.group}</Text>
+          ) : null}
+        </View>
         <Text style={styles.count}>
           {owned}/{country.stickers.length}
         </Text>
@@ -49,11 +54,18 @@ const styles = StyleSheet.create({
   flag: {
     fontSize: 20,
   },
+  nameRow: {
+    flex: 1,
+  },
   name: {
     fontSize: 14,
     fontWeight: '700',
     color: C.text,
-    flex: 1,
+  },
+  group: {
+    fontSize: 10,
+    color: C.accent,
+    fontWeight: '600',
   },
   count: {
     fontSize: 12,
