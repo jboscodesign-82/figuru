@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AlbumPage } from '@/types';
 import { useAlbum } from './useAlbum';
@@ -12,10 +11,9 @@ export function AlbumScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <FlashList
+      <FlatList
         data={pages}
         keyExtractor={(item: AlbumPage) => String(item.number)}
-        estimatedItemSize={400}
         ListHeaderComponent={<Header stats={stats} progressPercent={progressPercent} />}
         renderItem={({ item }: { item: AlbumPage }) => (
           <PageCard page={item} ownedIds={ownedIds} onToggle={toggleSticker} />
