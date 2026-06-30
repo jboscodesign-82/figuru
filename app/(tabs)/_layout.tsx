@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { Tabs, router, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '@/constants/colors';
@@ -14,40 +14,40 @@ function CustomTabBar() {
   return (
     <View style={[styles.tabBar, { paddingBottom: insets.bottom + 8 }]}>
       {/* Album tab */}
-      <TouchableOpacity
+      <Pressable
         style={styles.tabItem}
         onPress={() => router.push('/')}
-        activeOpacity={0.7}
+        
       >
         <Text style={[styles.tabIcon, isAlbum && styles.tabIconActive]}>📋</Text>
         <Text style={[styles.tabLabel, isAlbum && styles.tabLabelActive]}>
           Meu Álbum
         </Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Scanner FAB (center) */}
       <View style={styles.fabWrapper}>
-        <TouchableOpacity
+        <Pressable
           style={styles.fab}
           onPress={() => router.push('/scanner')}
-          activeOpacity={0.85}
+          
         >
           <Text style={styles.fabIcon}>📷</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.fabLabel}>Escanear</Text>
       </View>
 
       {/* Settings tab */}
-      <TouchableOpacity
+      <Pressable
         style={styles.tabItem}
         onPress={() => router.push('/settings')}
-        activeOpacity={0.7}
+        
       >
         <Text style={[styles.tabIcon, isSettings && styles.tabIconActive]}>⚙️</Text>
         <Text style={[styles.tabLabel, isSettings && styles.tabLabelActive]}>
           Configurações
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

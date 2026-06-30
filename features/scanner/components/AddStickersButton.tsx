@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
+import { Pressable, Text, StyleSheet, Animated } from 'react-native';
 import { C } from '@/constants/colors';
 
 interface Props {
@@ -11,12 +11,12 @@ export function AddStickersButton({ count, onPress }: Props) {
   if (count === 0) return null;
 
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.btn}>
+    <Pressable  onPress={onPress} style={styles.btn}>
       <Text style={styles.icon}>⭐</Text>
       <Text style={styles.text}>
         Adicionar {count} figurinha{count !== 1 ? 's' : ''}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

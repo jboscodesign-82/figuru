@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   ActivityIndicator,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -51,12 +51,12 @@ export function ScannerScreen() {
         <Text style={styles.permSub}>
           Para escanear figurinhas precisamos acessar sua câmera.
         </Text>
-        <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
+        <Pressable style={styles.permBtn} onPress={requestPermission}>
           <Text style={styles.permBtnText}>Permitir acesso</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        </Pressable>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Text style={styles.backBtnText}>Voltar</Text>
-        </TouchableOpacity>
+        </Pressable>
       </SafeAreaView>
     );
   }
@@ -75,9 +75,9 @@ export function ScannerScreen() {
       {/* Top HUD */}
       <SafeAreaView style={styles.hud} edges={['top']}>
         <View style={styles.hudInner}>
-          <TouchableOpacity onPress={() => { stopScanning(); router.back(); }} style={styles.closeBtn}>
+          <Pressable onPress={() => { stopScanning(); router.back(); }} style={styles.closeBtn}>
             <Text style={styles.closeBtnText}>✕</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           <View style={styles.hudInfo}>
             <View style={styles.dot} />

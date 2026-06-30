@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAlbum } from '@/features/album/useAlbum';
 import { C } from '@/constants/colors';
@@ -71,9 +71,9 @@ export function SettingsScreen() {
 
         {/* Danger zone */}
         <SectionHeader label="Zona de perigo" />
-        <TouchableOpacity onPress={handleReset} style={styles.dangerBtn}>
+        <Pressable onPress={handleReset} style={styles.dangerBtn}>
           <Text style={styles.dangerBtnText}>Apagar toda a coleção</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         <Text style={styles.version}>StickerScan MVP · Copa 2026</Text>
       </ScrollView>

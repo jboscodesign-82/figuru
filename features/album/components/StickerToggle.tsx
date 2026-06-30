@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { Pressable, Text, StyleSheet, View } from 'react-native';
 import { Sticker } from '@/types';
 import { C } from '@/constants/colors';
 
@@ -18,8 +18,8 @@ export function StickerToggle({ sticker, owned, onToggle }: Props) {
   const icon = isBadge ? '🛡️' : isTeamPhoto ? '📸' : isSpecial ? '⭐' : null;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.7}
+    <Pressable
+      
       onPress={() => onToggle(sticker.id)}
       style={[
         styles.chip,
@@ -40,7 +40,7 @@ export function StickerToggle({ sticker, owned, onToggle }: Props) {
           ? sticker.playerName
           : sticker.playerName.split(' ').pop()}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
