@@ -1,28 +1,26 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { Tabs, router } from 'expo-router';
+import { Tabs, router, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '@/constants/colors';
 
-function TabBarIcon({ label, focused }: { label: string; focused: boolean }) {
-  return (
-    <Text style={[styles.tabIcon, focused && styles.tabIconActive]}>{label}</Text>
-  );
-}
-
-function CustomTabBar({ state, descriptors, navigation }: any) {
+function CustomTabBar() {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+
+  const isAlbum = pathname === '/' || pathname === '/index';
+  const isSettings = pathname === '/settings';
 
   return (
     <View style={[styles.tabBar, { paddingBottom: insets.bottom + 8 }]}>
       {/* Album tab */}
       <TouchableOpacity
         style={styles.tabItem}
-        onPress={() => navigation.navigate('index')}
+        onPress={() => router.push('/')}
         activeOpacity={0.7}
       >
-        <TabBarIcon label="📋" focused={state.index === 0} />
-        <Text style={[styles.tabLabel, state.index === 0 && styles.tabLabelActive]}>
+        <Text style={[styles.tabIcon, isAlbum && styles.tabIconActive]}>📋</Text>
+        <Text style={[styles.tabLabel, isAlbum && styles.tabLabelActive]}>
           Meu Álbum
         </Text>
       </TouchableOpacity>
@@ -42,11 +40,11 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
       {/* Settings tab */}
       <TouchableOpacity
         style={styles.tabItem}
-        onPress={() => navigation.navigate('settings')}
+        onPress={() => router.push('/settings')}
         activeOpacity={0.7}
       >
-        <TabBarIcon label="⚙️" focused={state.index === 1} />
-        <Text style={[styles.tabLabel, state.index === 1 && styles.tabLabelActive]}>
+        <Text style={[styles.tabIcon, isSettings && styles.tabIconActive]}>⚙️</Text>
+        <Text style={[styles.tabLabel, isSettings && styles.tabLabelActive]}>
           Configurações
         </Text>
       </TouchableOpacity>
@@ -57,7 +55,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 export default function TabLayout() {
   return (
     <Tabs
-      tabBar={(props) => <CustomTabBar {...props} />}
+      tabBar={() => <CustomTabBar />}
       screenOptions={{ headerShown: false }}
     >
       <Tabs.Screen name="index" />
@@ -80,6 +78,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     gap: 3,
+    paddingVertical: 4,
   },
   tabIcon: {
     fontSize: 22,
