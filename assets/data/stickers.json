@@ -1,0 +1,219 @@
+{
+  "pages": [
+    {
+      "number": 1,
+      "countries": [
+        {
+          "code": "BRA",
+          "name": "Brasil",
+          "flag": "🇧🇷",
+          "stickers": [
+            { "id": "BRA001", "number": 1,  "playerName": "Alisson",         "position": "GK" },
+            { "id": "BRA002", "number": 2,  "playerName": "Ederson",          "position": "GK" },
+            { "id": "BRA003", "number": 3,  "playerName": "Danilo",           "position": "DF" },
+            { "id": "BRA004", "number": 4,  "playerName": "Marquinhos",       "position": "DF" },
+            { "id": "BRA005", "number": 5,  "playerName": "Éder Militão",     "position": "DF" },
+            { "id": "BRA006", "number": 6,  "playerName": "Casemiro",         "position": "MF" },
+            { "id": "BRA007", "number": 7,  "playerName": "Bruno Guimarães",  "position": "MF" },
+            { "id": "BRA008", "number": 8,  "playerName": "Lucas Paquetá",    "position": "MF" },
+            { "id": "BRA009", "number": 9,  "playerName": "Rodrygo",          "position": "FW" },
+            { "id": "BRA010", "number": 10, "playerName": "Vinicius Jr",      "position": "FW" },
+            { "id": "BRA011", "number": 11, "playerName": "Endrick",          "position": "FW" },
+            { "id": "BRA012", "number": 12, "playerName": "Gabriel Martinelli","position": "FW" }
+          ]
+        },
+        {
+          "code": "ARG",
+          "name": "Argentina",
+          "flag": "🇦🇷",
+          "stickers": [
+            { "id": "ARG001", "number": 13, "playerName": "Emiliano Martínez", "position": "GK" },
+            { "id": "ARG002", "number": 14, "playerName": "Nahuel Molina",     "position": "DF" },
+            { "id": "ARG003", "number": 15, "playerName": "Lisandro Martínez", "position": "DF" },
+            { "id": "ARG004", "number": 16, "playerName": "Cristian Romero",   "position": "DF" },
+            { "id": "ARG005", "number": 17, "playerName": "Rodrigo De Paul",   "position": "MF" },
+            { "id": "ARG006", "number": 18, "playerName": "Alexis Mac Allister","position": "MF" },
+            { "id": "ARG007", "number": 19, "playerName": "Julián Álvarez",    "position": "FW" },
+            { "id": "ARG008", "number": 20, "playerName": "Lautaro Martínez",  "position": "FW" },
+            { "id": "ARG009", "number": 21, "playerName": "Lionel Messi",      "position": "FW" },
+            { "id": "ARG010", "number": 22, "playerName": "Ángel Di María",    "position": "FW" },
+            { "id": "ARG011", "number": 23, "playerName": "Leandro Paredes",   "position": "MF" },
+            { "id": "ARG012", "number": 24, "playerName": "Marcos Acuña",      "position": "DF" }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "countries": [
+        {
+          "code": "FRA",
+          "name": "França",
+          "flag": "🇫🇷",
+          "stickers": [
+            { "id": "FRA001", "number": 25, "playerName": "Mike Maignan",       "position": "GK" },
+            { "id": "FRA002", "number": 26, "playerName": "Jules Koundé",       "position": "DF" },
+            { "id": "FRA003", "number": 27, "playerName": "Dayot Upamecano",    "position": "DF" },
+            { "id": "FRA004", "number": 28, "playerName": "Theo Hernández",     "position": "DF" },
+            { "id": "FRA005", "number": 29, "playerName": "Aurélien Tchouaméni","position": "MF" },
+            { "id": "FRA006", "number": 30, "playerName": "Antoine Griezmann",  "position": "MF" },
+            { "id": "FRA007", "number": 31, "playerName": "Ousmane Dembélé",    "position": "FW" },
+            { "id": "FRA008", "number": 32, "playerName": "Kylian Mbappé",      "position": "FW" },
+            { "id": "FRA009", "number": 33, "playerName": "Marcus Thuram",      "position": "FW" },
+            { "id": "FRA010", "number": 34, "playerName": "Randal Kolo Muani",  "position": "FW" },
+            { "id": "FRA011", "number": 35, "playerName": "N'Golo Kanté",       "position": "MF" },
+            { "id": "FRA012", "number": 36, "playerName": "William Saliba",     "position": "DF" }
+          ]
+        },
+        {
+          "code": "ENG",
+          "name": "Inglaterra",
+          "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+          "stickers": [
+            { "id": "ENG001", "number": 37, "playerName": "Jordan Pickford",  "position": "GK" },
+            { "id": "ENG002", "number": 38, "playerName": "Kyle Walker",      "position": "DF" },
+            { "id": "ENG003", "number": 39, "playerName": "John Stones",      "position": "DF" },
+            { "id": "ENG004", "number": 40, "playerName": "Luke Shaw",        "position": "DF" },
+            { "id": "ENG005", "number": 41, "playerName": "Declan Rice",      "position": "MF" },
+            { "id": "ENG006", "number": 42, "playerName": "Jude Bellingham",  "position": "MF" },
+            { "id": "ENG007", "number": 43, "playerName": "Phil Foden",       "position": "MF" },
+            { "id": "ENG008", "number": 44, "playerName": "Bukayo Saka",      "position": "FW" },
+            { "id": "ENG009", "number": 45, "playerName": "Harry Kane",       "position": "FW" },
+            { "id": "ENG010", "number": 46, "playerName": "Marcus Rashford",  "position": "FW" },
+            { "id": "ENG011", "number": 47, "playerName": "Trent Alexander-Arnold","position": "DF" },
+            { "id": "ENG012", "number": 48, "playerName": "Cole Palmer",      "position": "MF" }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "countries": [
+        {
+          "code": "GER",
+          "name": "Alemanha",
+          "flag": "🇩🇪",
+          "stickers": [
+            { "id": "GER001", "number": 49, "playerName": "Manuel Neuer",     "position": "GK" },
+            { "id": "GER002", "number": 50, "playerName": "Joshua Kimmich",   "position": "DF" },
+            { "id": "GER003", "number": 51, "playerName": "Antonio Rüdiger",  "position": "DF" },
+            { "id": "GER004", "number": 52, "playerName": "David Raum",       "position": "DF" },
+            { "id": "GER005", "number": 53, "playerName": "Ilkay Gündogan",   "position": "MF" },
+            { "id": "GER006", "number": 54, "playerName": "Florian Wirtz",    "position": "MF" },
+            { "id": "GER007", "number": 55, "playerName": "Jamal Musiala",    "position": "MF" },
+            { "id": "GER008", "number": 56, "playerName": "Leroy Sané",       "position": "FW" },
+            { "id": "GER009", "number": 57, "playerName": "Kai Havertz",      "position": "FW" },
+            { "id": "GER010", "number": 58, "playerName": "Thomas Müller",    "position": "FW" },
+            { "id": "GER011", "number": 59, "playerName": "Serge Gnabry",     "position": "FW" },
+            { "id": "GER012", "number": 60, "playerName": "Leon Goretzka",    "position": "MF" }
+          ]
+        },
+        {
+          "code": "ESP",
+          "name": "Espanha",
+          "flag": "🇪🇸",
+          "stickers": [
+            { "id": "ESP001", "number": 61, "playerName": "Unai Simón",      "position": "GK" },
+            { "id": "ESP002", "number": 62, "playerName": "Dani Carvajal",   "position": "DF" },
+            { "id": "ESP003", "number": 63, "playerName": "Aymeric Laporte", "position": "DF" },
+            { "id": "ESP004", "number": 64, "playerName": "Pau Torres",      "position": "DF" },
+            { "id": "ESP005", "number": 65, "playerName": "Sergio Busquets", "position": "MF" },
+            { "id": "ESP006", "number": 66, "playerName": "Pedri",           "position": "MF" },
+            { "id": "ESP007", "number": 67, "playerName": "Gavi",            "position": "MF" },
+            { "id": "ESP008", "number": 68, "playerName": "Dani Olmo",       "position": "MF" },
+            { "id": "ESP009", "number": 69, "playerName": "Ferran Torres",   "position": "FW" },
+            { "id": "ESP010", "number": 70, "playerName": "Álvaro Morata",   "position": "FW" },
+            { "id": "ESP011", "number": 71, "playerName": "Lamine Yamal",    "position": "FW" },
+            { "id": "ESP012", "number": 72, "playerName": "Nico Williams",   "position": "FW" }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "countries": [
+        {
+          "code": "POR",
+          "name": "Portugal",
+          "flag": "🇵🇹",
+          "stickers": [
+            { "id": "POR001", "number": 73, "playerName": "Rui Patrício",      "position": "GK" },
+            { "id": "POR002", "number": 74, "playerName": "João Cancelo",      "position": "DF" },
+            { "id": "POR003", "number": 75, "playerName": "Rúben Dias",        "position": "DF" },
+            { "id": "POR004", "number": 76, "playerName": "Nuno Mendes",       "position": "DF" },
+            { "id": "POR005", "number": 77, "playerName": "Rúben Neves",       "position": "MF" },
+            { "id": "POR006", "number": 78, "playerName": "Bruno Fernandes",   "position": "MF" },
+            { "id": "POR007", "number": 79, "playerName": "Bernardo Silva",    "position": "MF" },
+            { "id": "POR008", "number": 80, "playerName": "João Félix",        "position": "FW" },
+            { "id": "POR009", "number": 81, "playerName": "Rafael Leão",       "position": "FW" },
+            { "id": "POR010", "number": 82, "playerName": "Cristiano Ronaldo", "position": "FW" },
+            { "id": "POR011", "number": 83, "playerName": "Diogo Jota",        "position": "FW" },
+            { "id": "POR012", "number": 84, "playerName": "Vitinha",           "position": "MF" }
+          ]
+        },
+        {
+          "code": "NED",
+          "name": "Holanda",
+          "flag": "🇳🇱",
+          "stickers": [
+            { "id": "NED001", "number": 85, "playerName": "Bart Verbruggen",   "position": "GK" },
+            { "id": "NED002", "number": 86, "playerName": "Denzel Dumfries",   "position": "DF" },
+            { "id": "NED003", "number": 87, "playerName": "Virgil van Dijk",   "position": "DF" },
+            { "id": "NED004", "number": 88, "playerName": "Nathan Aké",        "position": "DF" },
+            { "id": "NED005", "number": 89, "playerName": "Frenkie de Jong",   "position": "MF" },
+            { "id": "NED006", "number": 90, "playerName": "Teun Koopmeiners",  "position": "MF" },
+            { "id": "NED007", "number": 91, "playerName": "Xavi Simons",       "position": "MF" },
+            { "id": "NED008", "number": 92, "playerName": "Steven Bergwijn",   "position": "FW" },
+            { "id": "NED009", "number": 93, "playerName": "Memphis Depay",     "position": "FW" },
+            { "id": "NED010", "number": 94, "playerName": "Cody Gakpo",        "position": "FW" },
+            { "id": "NED011", "number": 95, "playerName": "Donyell Malen",     "position": "FW" },
+            { "id": "NED012", "number": 96, "playerName": "Ryan Gravenberch",  "position": "MF" }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "countries": [
+        {
+          "code": "URU",
+          "name": "Uruguai",
+          "flag": "🇺🇾",
+          "stickers": [
+            { "id": "URU001", "number": 97,  "playerName": "Sergio Rochet",          "position": "GK" },
+            { "id": "URU002", "number": 98,  "playerName": "José María Giménez",     "position": "DF" },
+            { "id": "URU003", "number": 99,  "playerName": "Mathías Olivera",        "position": "DF" },
+            { "id": "URU004", "number": 100, "playerName": "Rodrigo Bentancur",      "position": "MF" },
+            { "id": "URU005", "number": 101, "playerName": "Federico Valverde",      "position": "MF" },
+            { "id": "URU006", "number": 102, "playerName": "Giorgian de Arrascaeta","position": "MF" },
+            { "id": "URU007", "number": 103, "playerName": "Darwin Núñez",           "position": "FW" },
+            { "id": "URU008", "number": 104, "playerName": "Facundo Pellistri",      "position": "FW" },
+            { "id": "URU009", "number": 105, "playerName": "Luis Suárez",            "position": "FW" },
+            { "id": "URU010", "number": 106, "playerName": "Edinson Cavani",         "position": "FW" },
+            { "id": "URU011", "number": 107, "playerName": "Lucas Torreira",         "position": "MF" },
+            { "id": "URU012", "number": 108, "playerName": "Nahitan Nández",         "position": "DF" }
+          ]
+        },
+        {
+          "code": "USA",
+          "name": "EUA",
+          "flag": "🇺🇸",
+          "stickers": [
+            { "id": "USA001", "number": 109, "playerName": "Matt Turner",        "position": "GK" },
+            { "id": "USA002", "number": 110, "playerName": "Antonee Robinson",   "position": "DF" },
+            { "id": "USA003", "number": 111, "playerName": "Walker Zimmerman",   "position": "DF" },
+            { "id": "USA004", "number": 112, "playerName": "Miles Robinson",     "position": "DF" },
+            { "id": "USA005", "number": 113, "playerName": "Tyler Adams",        "position": "MF" },
+            { "id": "USA006", "number": 114, "playerName": "Weston McKennie",    "position": "MF" },
+            { "id": "USA007", "number": 115, "playerName": "Yunus Musah",        "position": "MF" },
+            { "id": "USA008", "number": 116, "playerName": "Christian Pulisic",  "position": "FW" },
+            { "id": "USA009", "number": 117, "playerName": "Timothy Weah",       "position": "FW" },
+            { "id": "USA010", "number": 118, "playerName": "Ricardo Pepi",       "position": "FW" },
+            { "id": "USA011", "number": 119, "playerName": "Folarin Balogun",    "position": "FW" },
+            { "id": "USA012", "number": 120, "playerName": "Josh Sargent",       "position": "FW" }
+          ]
+        }
+      ]
+    }
+  ]
+}
