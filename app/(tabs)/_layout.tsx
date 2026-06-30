@@ -73,6 +73,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 8,
     paddingHorizontal: 16,
+    zIndex: 100,
+    elevation: 10,
   },
   tabItem: {
     flex: 1,
