@@ -6,10 +6,13 @@ import { createStickerRecognizer } from '@/services/recognition/StickerRecognize
 import { TesseractRecognizer } from '@/services/recognition/TesseractRecognizer';
 import useAlbumStore from '@/store/useAlbumStore';
 import useScannerStore from '@/store/useScannerStore';
+import type { WebCameraHandle } from './components/WebCamera';
+
+export type CameraRef = React.RefObject<CameraView> | React.RefObject<WebCameraHandle>;
 
 const recognizer = createStickerRecognizer('tesseract');
 
-export function useScanner(cameraRef: React.RefObject<CameraView>) {
+export function useScanner(cameraRef: CameraRef) {
   const { isOwned, markOwned } = useAlbumStore();
   const { detectedStickers, newStickers, updateDetections, clearDetections } = useScannerStore();
 
@@ -17,7 +20,6 @@ export function useScanner(cameraRef: React.RefObject<CameraView>) {
   const [scanning, setScanning] = useState(false);
   const mountedRef = useRef(true);
 
-  // Initialize Tesseract worker on mount
   useEffect(() => {
     mountedRef.current = true;
     if (recognizer instanceof TesseractRecognizer) {
@@ -32,25 +34,28 @@ export function useScanner(cameraRef: React.RefObject<CameraView>) {
     };
   }, [clearDetections]);
 
-  /** Take a photo and run OCR on it */
   const scan = useCallback(async () => {
-    if (!cameraRef.current || scanning) return;
+    if (scanning || !cameraRef.current) return;
     setScanning(true);
     clearDetections();
     try {
-      const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.8,
-        base64: false,
-      });
-      if (!photo?.uri) return;
+      let uri: string | null = null;
 
-      const detected = await recognizer.recognize(photo.uri);
+      // Web camera handle has takePicture(), CameraView has takePictureAsync()
+      const cam = cameraRef.current as any;
+      if (typeof cam.takePicture === 'function') {
+        uri = await cam.takePicture();
+      } else if (typeof cam.takePictureAsync === 'function') {
+        const photo = await cam.takePictureAsync({ quality: 0.8, base64: false });
+        uri = photo?.uri ?? null;
+      }
+
+      if (!uri) return;
+
+      const detected = await recognizer.recognize(uri);
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
       if (mountedRef.current) updateDetections(annotated);
-
-      if (annotated.length > 0) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      }
+      if (annotated.length > 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } finally {
       if (mountedRef.current) setScanning(false);
     }
@@ -64,12 +69,5 @@ export function useScanner(cameraRef: React.RefObject<CameraView>) {
     router.replace('/');
   }, [newStickers, markOwned, clearDetections]);
 
-  return {
-    ocrReady,
-    scanning,
-    detectedStickers,
-    newStickers,
-    scan,
-    addNewStickers,
-  };
+  return { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers };
 }

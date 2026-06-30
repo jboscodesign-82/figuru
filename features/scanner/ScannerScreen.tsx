@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,43 +13,55 @@ import { router } from 'expo-router';
 import { useScanner } from './useScanner';
 import { OverlayBox } from './components/OverlayBox';
 import { AddStickersButton } from './components/AddStickersButton';
+import { WebCamera, WebCameraHandle } from './components/WebCamera';
 import { C } from '@/constants/colors';
 
 export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef<CameraView>(null);
+
+  const nativeCamRef = useRef<CameraView>(null);
+  const webCamRef = useRef<WebCameraHandle>(null);
+  const cameraRef = Platform.OS === 'web' ? webCamRef : nativeCamRef;
+
   const { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers } =
-    useScanner(cameraRef);
+    useScanner(cameraRef as any);
 
-  if (!permission) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color={C.accentBlue} />
-      </View>
-    );
-  }
-
-  if (!permission.granted) {
-    return (
-      <SafeAreaView style={[styles.container, styles.center]}>
-        <Text style={styles.permIcon}>📷</Text>
-        <Text style={styles.permTitle}>Câmera necessária</Text>
-        <Text style={styles.permSub}>
-          Para escanear figurinhas precisamos acessar sua câmera.
-        </Text>
-        <Pressable style={styles.permBtn} onPress={requestPermission}>
-          <Text style={styles.permBtnText}>Permitir acesso</Text>
-        </Pressable>
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backBtnText}>Voltar</Text>
-        </Pressable>
-      </SafeAreaView>
-    );
+  // On web, permissions are handled by the browser — skip Expo permission flow
+  if (Platform.OS !== 'web') {
+    if (!permission) {
+      return (
+        <View style={[styles.container, styles.center]}>
+          <ActivityIndicator color={C.accentBlue} />
+        </View>
+      );
+    }
+    if (!permission.granted) {
+      return (
+        <SafeAreaView style={[styles.container, styles.center]}>
+          <Text style={styles.permIcon}>📷</Text>
+          <Text style={styles.permTitle}>Câmera necessária</Text>
+          <Text style={styles.permSub}>
+            Para escanear figurinhas precisamos acessar sua câmera.
+          </Text>
+          <Pressable style={styles.permBtn} onPress={requestPermission}>
+            <Text style={styles.permBtnText}>Permitir acesso</Text>
+          </Pressable>
+          <Pressable onPress={() => router.back()} style={styles.backBtn}>
+            <Text style={styles.backBtnText}>Voltar</Text>
+          </Pressable>
+        </SafeAreaView>
+      );
+    }
   }
 
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing="back" />
+      {/* Camera — web uses native getUserMedia, native uses CameraView */}
+      {Platform.OS === 'web' ? (
+        <WebCamera ref={webCamRef} />
+      ) : (
+        <CameraView ref={nativeCamRef} style={StyleSheet.absoluteFill} facing="back" />
+      )}
 
       {/* Detection overlays */}
       {detectedStickers.map((sticker) => (
@@ -131,7 +144,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     backgroundColor: C.bg,
   },
-
   permIcon: { fontSize: 48 },
   permTitle: { fontSize: 20, fontWeight: '700', color: C.text, textAlign: 'center' },
   permSub: { fontSize: 14, color: C.textMuted, textAlign: 'center', lineHeight: 20 },
@@ -145,7 +157,6 @@ const styles = StyleSheet.create({
   permBtnText: { color: '#000', fontWeight: '700', fontSize: 15 },
   backBtn: { marginTop: 4 },
   backBtnText: { color: C.textMuted, fontSize: 14 },
-
   hud: { position: 'absolute', top: 0, left: 0, right: 0 },
   hudInner: { marginHorizontal: 16, marginTop: 8, gap: 8 },
   closeBtn: {
@@ -172,7 +183,6 @@ const styles = StyleSheet.create({
   pillBlue: { backgroundColor: 'rgba(76,201,240,0.25)' },
   pillText: { color: '#fff', fontSize: 12, fontWeight: '600' },
   pillTextBlue: { color: C.accentBlue },
-
   viewfinder: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
@@ -188,7 +198,6 @@ const styles = StyleSheet.create({
   tr: { top: '30%', right: '10%', borderTopWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderTopRightRadius: 4 },
   bl: { top: '68%', left: '10%', borderBottomWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderBottomLeftRadius: 4 },
   br: { top: '68%', right: '10%', borderBottomWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderBottomRightRadius: 4 },
-
   scanBtnWrapper: {
     position: 'absolute',
     bottom: 60,
