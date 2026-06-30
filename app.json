@@ -28,7 +28,8 @@
     "scheme": "stickerscan",
     "web": {
       "bundler": "metro",
-      "output": "static"
+      "output": "static",
+      "baseUrl": "/figuru"
     },
     "experiments": {
       "typedRoutes": true
