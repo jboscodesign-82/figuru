@@ -11,7 +11,7 @@ export type CameraRef = React.RefObject<CameraView> | React.RefObject<WebCameraH
 
 const recognizer = createStickerRecognizer('tesseract');
 
-export function useScanner(cameraRef: CameraRef) {
+export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
   const { isOwned, markOwned } = useAlbumStore();
   const { detectedStickers, newStickers, updateDetections, clearDetections } = useScannerStore();
 
@@ -21,73 +21,66 @@ export function useScanner(cameraRef: CameraRef) {
 
   useEffect(() => {
     mountedRef.current = true;
-    console.log('[Scanner] montado, tem init?', typeof recognizer.init);
+    log(`montado | tem init: ${typeof recognizer.init}`);
 
     const doInit = async () => {
       try {
         if (typeof recognizer.init === 'function') {
-          console.log('[Scanner] chamando init()...');
+          log('iniciando OCR...');
           await recognizer.init();
-          console.log('[Scanner] init() concluído, isReady:', recognizer.isReady);
+          log('OCR pronto!');
+        } else {
+          log('sem init(), OK');
         }
         if (mountedRef.current) setOcrReady(true);
-      } catch (e) {
-        console.error('[Scanner] erro no init:', e);
-        // mesmo com erro, habilita o botão para tentar reconhecer
+      } catch (e: any) {
+        log(`erro init: ${e?.message ?? e}`);
         if (mountedRef.current) setOcrReady(true);
       }
     };
 
     doInit();
-
-    return () => {
-      mountedRef.current = false;
-      clearDetections();
-    };
-  }, [clearDetections]);
+    return () => { mountedRef.current = false; clearDetections(); };
+  }, [clearDetections, log]);
 
   const scan = useCallback(async () => {
-    console.log('[Scanner] scan() chamado | ocrReady:', ocrReady, '| camRef:', !!cameraRef.current);
-
+    log(`scan() | cam: ${!!cameraRef.current} | scanning: ${scanning}`);
     if (scanning) return;
-    if (!cameraRef.current) {
-      console.warn('[Scanner] cameraRef.current é null');
-      return;
-    }
+    if (!cameraRef.current) { log('ERR: cam null'); return; }
 
     setScanning(true);
     clearDetections();
-
     try {
       const cam = cameraRef.current as any;
       let uri: string | null = null;
 
       if (typeof cam.takePicture === 'function') {
-        console.log('[Scanner] usando WebCamera.takePicture()');
+        log('WebCamera.takePicture()...');
         uri = await cam.takePicture();
       } else if (typeof cam.takePictureAsync === 'function') {
-        console.log('[Scanner] usando CameraView.takePictureAsync()');
+        log('CameraView.takePictureAsync()...');
         const photo = await cam.takePictureAsync({ quality: 0.8, base64: false });
         uri = photo?.uri ?? null;
       } else {
-        console.error('[Scanner] câmera sem método de captura. Métodos:', Object.getOwnPropertyNames(cam));
+        log('ERR: sem método de captura');
       }
 
-      console.log('[Scanner] uri capturada:', typeof uri, uri?.slice(0, 80));
+      log(`uri: ${uri ? uri.slice(0, 40) + '...' : 'NULL'}`);
       if (!uri) return;
 
+      log('reconhecendo...');
       const detected = await recognizer.recognize(uri);
-      console.log('[Scanner] detectou', detected.length, 'figurinhas:', detected.map(d => `#${d.number} ${d.playerName}`));
+      log(`detectou ${detected.length} figurinha(s)`);
 
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
       if (mountedRef.current) updateDetections(annotated);
       if (annotated.length > 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    } catch (e) {
-      console.error('[Scanner] erro ao escanear:', e);
+    } catch (e: any) {
+      log(`ERR: ${e?.message ?? e}`);
     } finally {
       if (mountedRef.current) setScanning(false);
     }
-  }, [cameraRef, scanning, ocrReady, isOwned, updateDetections, clearDetections]);
+  }, [cameraRef, scanning, log, isOwned, updateDetections, clearDetections]);
 
   const addNewStickers = useCallback(() => {
     const ids = newStickers.map((s) => s.stickerId);

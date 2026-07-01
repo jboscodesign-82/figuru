@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,13 +18,19 @@ import { C } from '@/constants/colors';
 
 export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
+  const [debugLines, setDebugLines] = useState<string[]>(['aguardando...']);
+
+  const log = useCallback((msg: string) => {
+    console.log('[DBG]', msg);
+    setDebugLines(prev => [...prev.slice(-5), msg]);
+  }, []);
 
   const nativeCamRef = useRef<CameraView>(null);
   const webCamRef = useRef<WebCameraHandle>(null);
   const cameraRef = Platform.OS === 'web' ? webCamRef : nativeCamRef;
 
   const { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers } =
-    useScanner(cameraRef as any);
+    useScanner(cameraRef as any, log);
 
   // On web, permissions are handled by the browser — skip Expo permission flow
   if (Platform.OS !== 'web') {
@@ -126,6 +132,13 @@ export function ScannerScreen() {
         </Text>
       </View>
 
+      {/* Debug panel */}
+      <View style={styles.debugPanel}>
+        {debugLines.map((l, i) => (
+          <Text key={i} style={styles.debugText}>{l}</Text>
+        ))}
+      </View>
+
       <AddStickersButton count={newStickers.length} onPress={addNewStickers} />
     </View>
   );
@@ -221,4 +234,15 @@ const styles = StyleSheet.create({
   scanBtnDisabled: { opacity: 0.4 },
   scanBtnIcon: { fontSize: 28 },
   scanBtnLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: '600' },
+  debugPanel: {
+    position: 'absolute',
+    top: 140,
+    left: 12,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    borderRadius: 8,
+    padding: 8,
+    gap: 2,
+  },
+  debugText: { color: '#0f0', fontSize: 11, fontFamily: 'monospace' },
 });
