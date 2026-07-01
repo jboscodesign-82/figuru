@@ -12,6 +12,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useScanner } from './useScanner';
 import { WebCamera, WebCameraHandle } from './components/WebCamera';
 import { C } from '@/constants/colors';
@@ -108,7 +109,7 @@ export function ScannerScreen() {
         <SafeAreaView style={styles.hud} edges={['top']}>
           <View style={styles.hudInner}>
             <Pressable onPress={() => router.back()} style={styles.closeBtn}>
-              <Text style={styles.closeBtnText}>✕</Text>
+              <Ionicons name="close" size={20} color="#fff" />
             </Pressable>
             <View style={styles.hudStatus}>
               <View style={[styles.dot, ocrReady && styles.dotReady]} />
@@ -133,7 +134,7 @@ export function ScannerScreen() {
             <Pressable style={[styles.scanBtn, scanning && styles.scanBtnDisabled]} onPress={scan}>
               {scanning
                 ? <ActivityIndicator color="#000" />
-                : <Text style={styles.scanBtnIcon}>📷</Text>
+                : <Ionicons name="scan" size={28} color="#00131a" />
               }
             </Pressable>
             <Text style={styles.scanBtnLabel}>
@@ -179,15 +180,20 @@ export function ScannerScreen() {
         {detectedStickers.length > 0 && (
           <View style={styles.actionRow}>
             <Pressable style={styles.dismissBtn} onPress={dismiss}>
-              <Text style={styles.dismissBtnText}>Descartar</Text>
+              <Ionicons name="close" size={18} color={C.textMuted} />
             </Pressable>
             {newStickers.length > 0 && (
               <Pressable
                 style={[styles.addAllBtn, { flex: 1 }, addBtnGreen && styles.addAllBtnGreen]}
                 onPress={handleAdd}
               >
+                <Ionicons
+                  name={addBtnGreen ? 'checkmark-circle' : 'add-circle'}
+                  size={19}
+                  color="#00131a"
+                />
                 <Text style={styles.addAllText}>
-                  {addBtnGreen ? '✓ Adicionadas!' : `Adicionar ${newStickers.length} nova${newStickers.length !== 1 ? 's' : ''}`}
+                  {addBtnGreen ? 'Adicionadas!' : `Adicionar ${newStickers.length} nova${newStickers.length !== 1 ? 's' : ''}`}
                 </Text>
               </Pressable>
             )}
@@ -363,18 +369,21 @@ const styles = StyleSheet.create({
   dismissBtn: {
     borderRadius: 14,
     paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1.5,
     borderColor: C.border,
   },
-  dismissBtnText: { color: C.textMuted, fontWeight: '700', fontSize: 15 },
   addAllBtn: {
+    flexDirection: 'row',
+    gap: 8,
     backgroundColor: C.accent,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   addAllBtnGreen: { backgroundColor: C.success },
-  addAllText: { color: '#000', fontWeight: '800', fontSize: 15 },
+  addAllText: { color: '#00131a', fontWeight: '800', fontSize: 15 },
 });

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useAlbum } from '@/features/album/useAlbum';
 import { getClaudeApiKey, setClaudeApiKey } from '@/services/recognition/ClaudeVisionRecognizer';
-import { C } from '@/constants/colors';
+import { Gradient } from '@/components/Gradient';
+import { C, HEADER_GRADIENT } from '@/constants/colors';
 
 export function SettingsScreen() {
   const { stats, reset } = useAlbum();
@@ -32,10 +34,19 @@ export function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Configurações</Text>
+    <View style={styles.safe}>
+      <Gradient colors={HEADER_GRADIENT} angle={135} style={styles.header}>
+        <SafeAreaView edges={['top']}>
+          <View style={styles.headerInner}>
+            <View style={styles.logoMark}>
+              <Ionicons name="settings" size={22} color={C.bg} />
+            </View>
+            <Text style={styles.title}>Ajustes</Text>
+          </View>
+        </SafeAreaView>
+      </Gradient>
 
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Progress */}
         <SectionHeader label="Progresso" />
         <View style={styles.card}>
@@ -115,12 +126,13 @@ export function SettingsScreen() {
         {/* Danger zone */}
         <SectionHeader label="Zona de perigo" />
         <Pressable onPress={handleReset} style={styles.dangerBtn}>
+          <Ionicons name="trash-outline" size={17} color={C.danger} />
           <Text style={styles.dangerBtnText}>Apagar toda a coleção</Text>
         </Pressable>
 
-        <Text style={styles.version}>StickerScan MVP · Copa 2026</Text>
+        <Text style={styles.version}>Figuru · Copa 2026</Text>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -162,14 +174,29 @@ function Divider() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
-  scroll: { paddingHorizontal: 16, paddingBottom: 100 },
+  scroll: { paddingHorizontal: 16, paddingBottom: 120 },
+  header: {
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    marginBottom: 8,
+  },
+  headerInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 22,
+  },
+  logoMark: {
+    width: 42, height: 42, borderRadius: 12,
+    backgroundColor: C.accent, alignItems: 'center', justifyContent: 'center',
+  },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
-    color: C.text,
+    color: '#fff',
     letterSpacing: -0.5,
-    marginBottom: 24,
-    marginTop: 8,
   },
   sectionHeader: {
     fontSize: 11,
@@ -198,10 +225,13 @@ const styles = StyleSheet.create({
   rowValue: { fontSize: 14, fontWeight: '600', color: C.text },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: C.border },
   dangerBtn: {
+    flexDirection: 'row',
+    gap: 8,
     backgroundColor: 'rgba(248,113,113,0.12)',
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(248,113,113,0.3)',
   },
