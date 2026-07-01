@@ -100,17 +100,25 @@ Respond with ONLY valid JSON, no explanation:
 If you cannot find a field, use null. Always respond with valid JSON.`;
 
 export class ClaudeVisionRecognizer implements IStickerRecognizer {
+  private log: (msg: string) => void;
+
+  constructor(log?: (msg: string) => void) {
+    this.log = log ?? ((msg) => console.log('[ClaudeVision]', msg));
+  }
+
   get isReady() { return !!getClaudeApiKey(); }
 
   async recognize(frame: unknown): Promise<DetectedSticker[]> {
     if (typeof frame !== 'string') return [];
     const apiKey = getClaudeApiKey();
-    if (!apiKey) return [];
+    if (!apiKey) { this.log('ERR: sem API key'); return []; }
 
     // Convert data URL to base64 + mediaType
     const match = (frame as string).match(/^data:([^;]+);base64,(.+)$/);
-    if (!match) return [];
+    if (!match) { this.log('ERR: imagem inválida'); return []; }
     const [, mediaType, base64Data] = match;
+
+    this.log(`enviando p/ Claude (${Math.round(base64Data.length / 1024)}KB)...`);
 
     try {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -136,21 +144,21 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
 
       if (!res.ok) {
         const err = await res.text();
-        console.error('[ClaudeVision] API error:', res.status, err);
+        this.log(`ERR API ${res.status}: ${err.slice(0, 80)}`);
         return [];
       }
 
       const json = await res.json();
       const text = json.content?.[0]?.text ?? '';
-      console.log('[ClaudeVision] resposta:', text);
+      this.log(`Claude: ${text.slice(0, 80)}`);
 
       const parsed = JSON.parse(text);
       const { name, number, country } = parsed as { name?: string; number?: number; country?: string };
 
-      if (!name) return [];
+      if (!name) { this.log('sem nome na resposta'); return []; }
 
       const meta = findBestMatch(name ?? '', number ?? null, country ?? null);
-      if (!meta) return [];
+      if (!meta) { this.log(`sem match para "${name}"`); return []; }
 
       return [{
         stickerId: meta.id,
@@ -162,7 +170,7 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
         boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
       }];
     } catch (e: any) {
-      console.error('[ClaudeVision] erro:', e?.message ?? e);
+      this.log(`ERR: ${e?.message ?? e}`);
       return [];
     }
   }

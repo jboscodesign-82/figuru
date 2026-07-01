@@ -74,8 +74,8 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
       if (!uri) return;
 
       // Recria recognizer a cada scan para pegar API key salva nas configurações
-      const rec = createStickerRecognizer('auto');
       const hasKey = !!getClaudeApiKey();
+      const rec = createStickerRecognizer('auto', log);
       log(`reconhecendo via ${hasKey ? 'Claude Vision' : 'Tesseract'}...`);
       const timeout = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('timeout 10s')), 10000)

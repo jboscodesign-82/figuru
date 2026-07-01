@@ -5,17 +5,19 @@ import { ClaudeVisionRecognizer, getClaudeApiKey } from './ClaudeVisionRecognize
 
 export type RecognizerType = 'mock' | 'tesseract' | 'claude' | 'auto';
 
-export function createStickerRecognizer(type: RecognizerType = 'auto'): IStickerRecognizer {
+export function createStickerRecognizer(
+  type: RecognizerType = 'auto',
+  log?: (msg: string) => void,
+): IStickerRecognizer {
   switch (type) {
     case 'claude':
-      return new ClaudeVisionRecognizer();
+      return new ClaudeVisionRecognizer(log);
     case 'tesseract':
       return new TesseractRecognizer();
     case 'mock':
       return new MockStickerRecognizer();
     case 'auto':
     default:
-      // Use Claude if API key configured, otherwise Tesseract
-      return getClaudeApiKey() ? new ClaudeVisionRecognizer() : new TesseractRecognizer();
+      return getClaudeApiKey() ? new ClaudeVisionRecognizer(log) : new TesseractRecognizer();
   }
 }
