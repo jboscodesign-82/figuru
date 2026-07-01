@@ -22,6 +22,7 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
   useEffect(() => {
     mountedRef.current = true;
     log(`montado | tem init: ${typeof recognizer.init}`);
+    (globalThis as any).__ocrDebug = (text: string) => log(`OCR: "${text.slice(0, 60)}"`);
 
     const doInit = async () => {
       try {

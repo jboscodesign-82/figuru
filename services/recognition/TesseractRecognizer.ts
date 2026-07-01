@@ -17,7 +17,7 @@ const byNameWord = new Map<string, StickerMeta[]>();
 function normalize(s: string) {
   return s
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[̀-ͯ]/g, '') // strip diacritics: é→e, ã→a, ê→e, etc.
     .toUpperCase()
     .replace(/[^A-Z]/g, '');
 }
@@ -117,11 +117,9 @@ export class TesseractRecognizer implements IStickerRecognizer {
   async init() {
     if (this.worker || this.loading) return;
     this.loading = true;
-    // createWorker 3rd arg = worker options (not Tesseract params)
     this.worker = await createWorker('eng', 1);
-    // Tesseract params must be set via setParameters()
     await this.worker.setParameters({
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ',
+      // sem whitelist: lê acentos (é, ã, ê) que aparecem em nomes de jogadores
       tessedit_pageseg_mode: PSM.SPARSE_TEXT,
     });
     this.loading = false;
@@ -134,12 +132,14 @@ export class TesseractRecognizer implements IStickerRecognizer {
 
     const { data } = await this.worker.recognize(frame);
 
-    console.log('[OCR] texto bruto:', data.text?.slice(0, 300));
-    console.log('[OCR] palavras encontradas:', (data.words ?? []).length);
+    const rawText = data.text?.replace(/\n/g, ' ').trim().slice(0, 200) ?? '';
+    console.log('[OCR] texto:', rawText);
+    // Expose raw text to debug panel via global
+    if (typeof (globalThis as any).__ocrDebug === 'function') (globalThis as any).__ocrDebug(rawText);
 
     const allWords: OcrWord[] = [];
     for (const word of (data.words ?? [])) {
-      if (!word.text?.trim() || word.confidence < 20) continue;
+      if (!word.text?.trim() || word.confidence < 5) continue;
       allWords.push({ text: word.text.trim(), bbox: word.bbox, confidence: word.confidence });
     }
 
