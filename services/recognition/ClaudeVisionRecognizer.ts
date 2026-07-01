@@ -182,13 +182,14 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
       const items: { name?: string; number?: number; country?: string }[] =
         Array.isArray(parsed) ? parsed : [parsed];
 
-      this.log(`Claude identificou ${items.length} figurinha(s)`);
+      this.log(`Claude identificou ${items.length} figurinha(s): ${items.map(i => i.name).join(', ').slice(0, 120)}`);
 
       const results: DetectedSticker[] = [];
       const seenIds = new Set<string>();
       for (const item of items) {
         if (!item.name) continue;
         const meta = findBestMatch(item.name, item.number ?? null, item.country ?? null);
+        this.log(`match "${item.name}"(${item.number ?? '?'},${item.country ?? '?'}) → ${meta ? meta.playerName : 'NULL'}`);
         if (!meta || seenIds.has(meta.id)) continue;
         seenIds.add(meta.id);
         results.push({
