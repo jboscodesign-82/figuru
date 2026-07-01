@@ -21,8 +21,8 @@ export function AlbumScreen() {
         data={countries}
         keyExtractor={(c: Country) => c.code}
         ListHeaderComponent={<Header stats={stats} progressPercent={progressPercent} />}
-        renderItem={({ item }: { item: Country }) => (
-          <Reveal>
+        renderItem={({ item, index }: { item: Country; index: number }) => (
+          <Reveal delay={(index % 6) * 80}>
             <CountrySection country={item} ownedIds={ownedIds} onToggle={toggleSticker} />
           </Reveal>
         )}
@@ -73,15 +73,17 @@ function StatBox({ value, label, accent }: { value: string; label: string; accen
 }
 
 // Anima o card surgindo (fade + leve subida) quando entra na tela ao rolar.
-function Reveal({ children }: { children: React.ReactNode }) {
+// O delay em cascata faz os blocos aparecerem gradativamente.
+function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const anim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(anim, {
       toValue: 1,
-      duration: 380,
+      duration: 420,
+      delay,
       useNativeDriver: true,
     }).start();
-  }, [anim]);
+  }, [anim, delay]);
   return (
     <Animated.View
       style={{
@@ -143,10 +145,13 @@ function StickerChip({ sticker, owned, onToggle }: { sticker: Sticker; owned: bo
       onPress={() => onToggle(sticker.id)}
       style={[styles.chip, owned && styles.chipOwned]}
     >
-      {owned ? (
-        <Ionicons name="checkmark" size={26} color={C.success} />
-      ) : (
-        <Text style={styles.chipNum}>{sticker.number === 0 ? '00' : sticker.number}</Text>
+      <Text style={[styles.chipNum, owned && styles.chipNumOwned]}>
+        {sticker.number === 0 ? '00' : sticker.number}
+      </Text>
+      {owned && (
+        <View style={styles.chipCheck}>
+          <Ionicons name="checkmark" size={13} color="#fff" />
+        </View>
       )}
     </Pressable>
   );
@@ -200,7 +205,16 @@ const styles = StyleSheet.create({
     width: 54, height: 54, borderRadius: 13,
     borderWidth: 1.5, borderColor: C.border, backgroundColor: 'rgba(0,0,0,0.25)',
     alignItems: 'center', justifyContent: 'center',
+    position: 'relative',
   },
-  chipOwned: { borderColor: C.success, backgroundColor: 'rgba(74,222,128,0.15)' },
+  chipOwned: { borderColor: '#ffffff', borderWidth: 2, backgroundColor: 'rgba(255,255,255,0.08)' },
   chipNum: { fontSize: 19, fontWeight: '700', color: C.textMuted },
+  chipNumOwned: { color: '#ffffff', fontWeight: '800' },
+  chipCheck: {
+    position: 'absolute',
+    top: 3,
+    right: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
