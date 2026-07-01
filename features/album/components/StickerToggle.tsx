@@ -5,11 +5,12 @@ import { C } from '@/constants/colors';
 
 interface Props {
   sticker: Sticker;
+  position: number;
   owned: boolean;
   onToggle: (id: string) => void;
 }
 
-export function StickerToggle({ sticker, owned, onToggle }: Props) {
+export function StickerToggle({ sticker, position, owned, onToggle }: Props) {
   const isBadge = sticker.type === 'badge';
   const isTeamPhoto = sticker.type === 'team_photo';
   const isSpecial = sticker.type === 'special';
@@ -32,7 +33,7 @@ export function StickerToggle({ sticker, owned, onToggle }: Props) {
         <Text style={styles.icon}>{owned ? '✓' : icon}</Text>
       ) : (
         <Text style={[styles.number, owned && styles.numberOwned]}>
-          {owned ? '✓' : sticker.number}
+          {owned ? '✓' : position}
         </Text>
       )}
       <Text style={[styles.name, owned && styles.nameOwned]} numberOfLines={1}>

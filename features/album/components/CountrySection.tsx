@@ -28,10 +28,11 @@ export function CountrySection({ country, ownedIds, onToggle }: Props) {
         </Text>
       </View>
       <View style={styles.grid}>
-        {country.stickers.map((sticker) => (
+        {country.stickers.map((sticker, index) => (
           <StickerToggle
             key={sticker.id}
             sticker={sticker}
+            position={index + 1}
             owned={Boolean(ownedIds[sticker.id])}
             onToggle={onToggle}
           />
