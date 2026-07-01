@@ -66,13 +66,13 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
           const iH = img.naturalHeight;
 
           // Crop bottom 45% of image (where player name band lives on Panini stickers)
-          // then upscale to ~1400px wide so Tesseract gets clean text
+          // Cap output at 900px wide — Tesseract hangs on large images
           const cropY = Math.round(iH * 0.55);
           const cropH = iH - cropY;
-          const TARGET_W = 1400;
-          const upscale = TARGET_W / iW;
+          const TARGET_W = Math.min(900, iW);
+          const scale = TARGET_W / iW;
           const outW = TARGET_W;
-          const outH = Math.round(cropH * upscale);
+          const outH = Math.round(cropH * scale);
 
           const canvas = document.createElement('canvas');
           canvas.width = outW;
@@ -81,6 +81,7 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
           // Grayscale + contraste para melhorar OCR
           ctx.filter = 'grayscale(1) contrast(2.5) brightness(1.1)';
           ctx.drawImage(img, 0, cropY, iW, cropH, 0, 0, outW, outH);
+          console.log(`[WebCam] recorte: ${iW}x${iH} → crop(${cropY},${cropH}) → ${outW}x${outH}`);
           URL.revokeObjectURL(img.src);
 
           resolve(canvas.toDataURL('image/jpeg', 0.90));
