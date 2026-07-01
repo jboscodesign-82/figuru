@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { CameraView } from 'expo-camera';
 import { createStickerRecognizer } from '@/services/recognition/StickerRecognizer';
-import { TesseractRecognizer } from '@/services/recognition/TesseractRecognizer';
 import useAlbumStore from '@/store/useAlbumStore';
 import useScannerStore from '@/store/useScannerStore';
 import type { WebCameraHandle } from './components/WebCamera';
+import type { CameraView } from 'expo-camera';
 
 export type CameraRef = React.RefObject<CameraView> | React.RefObject<WebCameraHandle>;
 
@@ -22,33 +21,46 @@ export function useScanner(cameraRef: CameraRef) {
 
   useEffect(() => {
     mountedRef.current = true;
-    console.log('[Scanner] iniciando OCR...');
-    if (recognizer instanceof TesseractRecognizer) {
-      recognizer.init()
-        .then(() => {
-          console.log('[Scanner] OCR pronto!');
-          if (mountedRef.current) setOcrReady(true);
-        })
-        .catch((e) => console.error('[Scanner] erro ao iniciar OCR:', e));
-    }
+    console.log('[Scanner] montado, tem init?', typeof recognizer.init);
+
+    const doInit = async () => {
+      try {
+        if (typeof recognizer.init === 'function') {
+          console.log('[Scanner] chamando init()...');
+          await recognizer.init();
+          console.log('[Scanner] init() concluído, isReady:', recognizer.isReady);
+        }
+        if (mountedRef.current) setOcrReady(true);
+      } catch (e) {
+        console.error('[Scanner] erro no init:', e);
+        // mesmo com erro, habilita o botão para tentar reconhecer
+        if (mountedRef.current) setOcrReady(true);
+      }
+    };
+
+    doInit();
+
     return () => {
       mountedRef.current = false;
-      if (recognizer instanceof TesseractRecognizer) recognizer.terminate();
       clearDetections();
     };
   }, [clearDetections]);
 
   const scan = useCallback(async () => {
-    console.log('[Scanner] scan clicado | ocrReady:', ocrReady, '| scanning:', scanning, '| camRef:', !!cameraRef.current);
-    if (scanning) { console.log('[Scanner] ignorado: já está escaneando'); return; }
-    if (!cameraRef.current) { console.log('[Scanner] ignorado: câmera não pronta'); return; }
+    console.log('[Scanner] scan() chamado | ocrReady:', ocrReady, '| camRef:', !!cameraRef.current);
+
+    if (scanning) return;
+    if (!cameraRef.current) {
+      console.warn('[Scanner] cameraRef.current é null');
+      return;
+    }
 
     setScanning(true);
     clearDetections();
+
     try {
-      let uri: string | null = null;
       const cam = cameraRef.current as any;
-      console.log('[Scanner] métodos da câmera:', Object.keys(cam));
+      let uri: string | null = null;
 
       if (typeof cam.takePicture === 'function') {
         console.log('[Scanner] usando WebCamera.takePicture()');
@@ -58,19 +70,20 @@ export function useScanner(cameraRef: CameraRef) {
         const photo = await cam.takePictureAsync({ quality: 0.8, base64: false });
         uri = photo?.uri ?? null;
       } else {
-        console.warn('[Scanner] câmera sem método de captura!');
+        console.error('[Scanner] câmera sem método de captura. Métodos:', Object.getOwnPropertyNames(cam));
       }
 
-      console.log('[Scanner] foto capturada, uri length:', uri?.length ?? 0);
-      if (!uri) { console.warn('[Scanner] URI nulo, abortando'); return; }
+      console.log('[Scanner] uri capturada:', typeof uri, uri?.slice(0, 80));
+      if (!uri) return;
 
       const detected = await recognizer.recognize(uri);
-      console.log('[Scanner] detectou:', detected.length, detected.map(d => `${d.number} ${d.playerName}`));
+      console.log('[Scanner] detectou', detected.length, 'figurinhas:', detected.map(d => `#${d.number} ${d.playerName}`));
+
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
       if (mountedRef.current) updateDetections(annotated);
       if (annotated.length > 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch (e) {
-      console.error('[Scanner] erro:', e);
+      console.error('[Scanner] erro ao escanear:', e);
     } finally {
       if (mountedRef.current) setScanning(false);
     }

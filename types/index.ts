@@ -46,8 +46,9 @@ export interface DetectedSticker {
 // the rest of the codebase.
 
 export interface IStickerRecognizer {
-  /** REPLACE frame type with Frame from react-native-vision-camera in production */
   recognize(frame: unknown): Promise<DetectedSticker[]>;
+  init?(): Promise<void>;
+  readonly isReady?: boolean;
 }
 
 export interface IOCRProvider {

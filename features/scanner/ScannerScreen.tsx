@@ -112,9 +112,8 @@ export function ScannerScreen() {
       {/* Scan button */}
       <View style={styles.scanBtnWrapper}>
         <Pressable
-          style={[styles.scanBtn, (!ocrReady || scanning) && styles.scanBtnDisabled]}
+          style={[styles.scanBtn, scanning && styles.scanBtnDisabled]}
           onPress={scan}
-          disabled={!ocrReady || scanning}
         >
           {scanning ? (
             <ActivityIndicator color="#000" />
