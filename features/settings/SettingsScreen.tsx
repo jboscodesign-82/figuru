@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAlbum } from '@/features/album/useAlbum';
 import { getClaudeApiKey, setClaudeApiKey } from '@/services/recognition/ClaudeVisionRecognizer';
+import { AccountPanel } from '@/features/auth/AccountPanel';
 import { Gradient } from '@/components/Gradient';
 import { C, HEADER_GRADIENT } from '@/constants/colors';
 
@@ -47,6 +48,10 @@ export function SettingsScreen() {
       </Gradient>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Conta */}
+        <SectionHeader label="Conta" />
+        <AccountPanel />
+
         {/* Progress */}
         <SectionHeader label="Progresso" />
         <View style={styles.card}>

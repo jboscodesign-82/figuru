@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { Platform, View, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { C } from '@/constants/colors';
+import useAuthStore from '@/store/useAuthStore';
+import { useCloudSync } from '@/features/auth/useCloudSync';
 
 const queryClient = new QueryClient();
 
@@ -13,6 +16,10 @@ const Wrapper = Platform.OS === 'web'
     );
 
 export default function RootLayout() {
+  const init = useAuthStore((s) => s.init);
+  useEffect(() => { init(); }, [init]);
+  useCloudSync();
+
   return (
     <Wrapper>
       <QueryClientProvider client={queryClient}>

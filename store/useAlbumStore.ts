@@ -11,6 +11,7 @@ interface AlbumStore {
 
   toggleSticker: (stickerId: string) => void;
   markOwned: (stickerIds: string[]) => void;
+  setOwned: (ownedIds: Record<string, boolean>) => void;
   isOwned: (stickerId: string) => boolean;
   getStats: () => { owned: number; total: number };
   reset: () => void;
@@ -36,6 +37,8 @@ const useAlbumStore = create<AlbumStore>()(
           stickerIds.forEach((id) => { owned[id] = true; });
           return { ownedIds: owned };
         }),
+
+      setOwned: (ownedIds) => set({ ownedIds: { ...ownedIds } }),
 
       isOwned: (stickerId) => Boolean(get().ownedIds[stickerId]),
 
