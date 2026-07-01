@@ -38,7 +38,7 @@ function Header({ stats, progressPercent }: { stats: { owned: number; total: num
         <View style={styles.headerInner}>
           <View style={styles.titleRow}>
             <View style={styles.logoMark}>
-              <Ionicons name="football" size={22} color={C.bg} />
+              <Ionicons name="football" size={22} color="#fff" />
             </View>
             <View>
               <Text style={styles.title}>Meu Álbum</Text>

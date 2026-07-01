@@ -39,7 +39,7 @@ export function SettingsScreen() {
         <SafeAreaView edges={['top']}>
           <View style={styles.headerInner}>
             <View style={styles.logoMark}>
-              <Ionicons name="settings" size={22} color={C.bg} />
+              <Ionicons name="settings" size={22} color="#fff" />
             </View>
             <Text style={styles.title}>Ajustes</Text>
           </View>
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignSelf: 'flex-start',
   },
-  saveBtnText: { color: '#000', fontWeight: '700', fontSize: 13 },
+  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   version: {
     textAlign: 'center',
     color: C.textDim,

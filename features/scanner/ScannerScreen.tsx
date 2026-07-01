@@ -133,8 +133,8 @@ export function ScannerScreen() {
           <View style={styles.scanBtnWrapper}>
             <Pressable style={[styles.scanBtn, scanning && styles.scanBtnDisabled]} onPress={scan}>
               {scanning
-                ? <ActivityIndicator color="#000" />
-                : <Ionicons name="scan" size={28} color="#00131a" />
+                ? <ActivityIndicator color="#fff" />
+                : <Ionicons name="scan" size={28} color="#fff" />
               }
             </Pressable>
             <Text style={styles.scanBtnLabel}>
@@ -190,7 +190,7 @@ export function ScannerScreen() {
                 <Ionicons
                   name={addBtnGreen ? 'checkmark-circle' : 'add-circle'}
                   size={19}
-                  color="#00131a"
+                  color="#fff"
                 />
                 <Text style={styles.addAllText}>
                   {addBtnGreen ? 'Adicionadas!' : `Adicionar ${newStickers.length} nova${newStickers.length !== 1 ? 's' : ''}`}
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   panelTitle: { fontSize: 16, fontWeight: '700', color: C.text },
   panelCount: {
     backgroundColor: C.accentBlue,
-    color: '#000',
+    color: '#fff',
     fontSize: 12,
     fontWeight: '800',
     paddingHorizontal: 7,
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   emptyText: { color: C.textMuted, fontSize: 14, textAlign: 'center' },
   retryBtn: { backgroundColor: C.accentBlue, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
-  retryBtnText: { color: '#000', fontWeight: '700', fontSize: 14 },
+  retryBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   list: { flex: 1 },
 
   // Sticker row
@@ -385,5 +385,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addAllBtnGreen: { backgroundColor: C.success },
-  addAllText: { color: '#00131a', fontWeight: '800', fontSize: 15 },
+  addAllText: { color: '#fff', fontWeight: '800', fontSize: 15 },
 });

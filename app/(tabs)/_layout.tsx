@@ -28,7 +28,7 @@ function CustomTabBar() {
         {/* Scanner FAB (centro, elevado) */}
         <View style={styles.fabWrapper}>
           <Pressable style={styles.fab} onPress={() => router.push('/scanner')}>
-            <Ionicons name="scan" size={26} color="#00131a" />
+            <Ionicons name="scan" size={26} color="#fff" />
           </Pressable>
           <Text style={styles.fabLabel}>Escanear</Text>
         </View>
