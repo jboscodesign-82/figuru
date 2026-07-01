@@ -1,96 +1,6 @@
 import { IStickerRecognizer, DetectedSticker } from '@/types';
-import albumData from '@/assets/data/stickers.json';
 
-// ─── Lookup tables ──────────────────────────────────────────────────────────
-
-interface StickerMeta {
-  id: string;
-  number: number;
-  playerName: string;
-  country: string;
-}
-
-const byNumber = new Map<number, StickerMeta>();
-const byNameWord = new Map<string, StickerMeta[]>();
-const byId = new Map<string, StickerMeta>();
-
-function normalize(s: string) {
-  return s
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toUpperCase()
-    .replace(/[^A-Z]/g, '');
-}
-
-albumData.pages.forEach((p) =>
-  p.countries.forEach((c) =>
-    c.stickers.forEach((s) => {
-      const meta: StickerMeta = { id: s.id, number: s.number, playerName: s.playerName, country: c.code };
-      byNumber.set(s.number, meta);
-      byId.set(s.id, meta);
-      s.playerName.split(/\s+/).forEach((word) => {
-        const key = normalize(word);
-        if (key.length < 3) return;
-        if (!byNameWord.has(key)) byNameWord.set(key, []);
-        byNameWord.get(key)!.push(meta);
-      });
-    })
-  )
-);
-
-// ─── Matching ───────────────────────────────────────────────────────────────
-
-function findBestMatch(name: string, number: number | null, country: string | null): StickerMeta | null {
-  // Try number first (most reliable)
-  if (number && byNumber.has(number)) {
-    const m = byNumber.get(number)!;
-    // Validate: country must match if provided
-    if (!country || m.country === country) return m;
-  }
-
-  // Split Claude's identified name into words and score stickers by overlap
-  const queryWords = name.split(/\s+/).map(normalize).filter(w => w.length >= 3);
-  if (queryWords.length === 0) return null;
-
-  const scored = new Map<string, number>();
-
-  for (const qw of queryWords) {
-    // Exact word match in index
-    if (byNameWord.has(qw)) {
-      const pts = qw.length * 3; // strong signal
-      for (const m of byNameWord.get(qw)!) {
-        const countryBoost = (country && m.country === country) ? 10 : 0;
-        scored.set(m.id, (scored.get(m.id) ?? 0) + pts + countryBoost);
-      }
-    }
-    // Substring: query word contained in a known name word (e.g. "CALHANO" inside "CALHANOGLU")
-    for (const [key, metas] of byNameWord) {
-      if (key === qw) continue; // already handled above
-      if (key.length >= 5 && key.includes(qw) && qw.length >= 4) {
-        const pts = qw.length; // weaker signal
-        for (const m of metas) {
-          const countryBoost = (country && m.country === country) ? 10 : 0;
-          scored.set(m.id, (scored.get(m.id) ?? 0) + pts + countryBoost);
-        }
-      }
-    }
-  }
-
-  if (scored.size === 0) return null;
-
-  // Filter by country if provided (exclude stickers from wrong country unless no other candidates)
-  const entries = [...scored.entries()].sort((a, b) => b[1] - a[1]);
-  if (country) {
-    const countryFiltered = entries.filter(([id]) => byId.get(id)?.country === country);
-    if (countryFiltered.length > 0) {
-      return byId.get(countryFiltered[0][0]) ?? null;
-    }
-  }
-
-  return byId.get(entries[0][0]) ?? null;
-}
-
-// ─── Recognizer ────────────────────────────────────────────────────────────
+// ─── API key helpers ────────────────────────────────────────────────────────
 
 export const CLAUDE_KEY_STORAGE = 'figuru_claude_api_key';
 
@@ -111,16 +21,33 @@ export function setClaudeApiKey(key: string) {
   } catch { /* noop */ }
 }
 
+// ─── Sticker ID from Claude output ─────────────────────────────────────────
+
+// Builds a stable ID from country + number (e.g. "FRA014").
+// Falls back to normalized name when number is unavailable.
+function buildStickerId(country: string | null | undefined, number: number | null | undefined, name: string): string {
+  const c = (country ?? 'UNK').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+  if (number && number > 0) {
+    return `${c}${String(number).padStart(3, '0')}`;
+  }
+  const normName = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 12);
+  return `${c}_${normName}`;
+}
+
+// ─── Prompt ────────────────────────────────────────────────────────────────
+
 const PROMPT = `You are analyzing a photo that may contain one or more Panini FIFA World Cup 2026 sticker cards.
 Identify ALL stickers visible in the image. For each sticker extract:
 - Player full name (as printed on the sticker, usually at the bottom band)
-- Sticker number (1-3 digit number, if visible)
-- Country code (3-letter code like FRA, ESP, BRA, ARG — look for the flag or text)
+- Sticker number (1-3 digit number printed on the sticker, if visible)
+- Country code (3-letter FIFA code like FRA, ESP, BRA, ARG, USA, GER, TUR — look for the flag or text)
 
 Respond with ONLY valid JSON array, no explanation:
 [{"name": "PLAYER NAME", "number": 123, "country": "FRA"}, {"name": "OTHER PLAYER", "number": null, "country": "BRA"}]
 
 If only one sticker, still return an array with one element. Use null for fields you cannot read.`;
+
+// ─── Recognizer ────────────────────────────────────────────────────────────
 
 export class ClaudeVisionRecognizer implements IStickerRecognizer {
   private log: (msg: string) => void;
@@ -136,7 +63,6 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
     const apiKey = getClaudeApiKey();
     if (!apiKey) { this.log('ERR: sem API key'); return []; }
 
-    // Convert data URL to base64 + mediaType
     const match = (frame as string).match(/^data:([^;]+);base64,(.+)$/);
     if (!match) { this.log('ERR: imagem inválida'); return []; }
     const [, mediaType, base64Data] = match;
@@ -173,53 +99,36 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
 
       const json = await res.json();
       const text = json.content?.[0]?.text ?? '';
-      this.log(`Claude: ${text.slice(0, 80)}`);
+      this.log(`Claude: ${text.slice(0, 120)}`);
 
-      // Extrai JSON (array ou objeto) via regex
       const jsonMatch = text.match(/\[[\s\S]*\]/) ?? text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) { this.log('sem JSON na resposta'); return []; }
       const parsed = JSON.parse(jsonMatch[0]);
-      const items: { name?: string; number?: number; country?: string }[] =
+      const items: { name?: string; number?: number | null; country?: string }[] =
         Array.isArray(parsed) ? parsed : [parsed];
 
-      this.log(`Claude identificou ${items.length} figurinha(s): ${items.map(i => i.name).join(', ').slice(0, 120)}`);
+      this.log(`Claude identificou ${items.length} figurinha(s): ${items.map(i => `${i.name}(${i.country ?? '?'}#${i.number ?? '?'})`).join(', ').slice(0, 150)}`);
 
       const results: DetectedSticker[] = [];
       const seenIds = new Set<string>();
+
       for (const item of items) {
         if (!item.name) continue;
-        const meta = findBestMatch(item.name, item.number ?? null, item.country ?? null);
-        this.log(`match "${item.name}"(${item.number ?? '?'},${item.country ?? '?'}) → ${meta ? meta.playerName : 'NULL'}`);
-
-        if (meta && !seenIds.has(meta.id)) {
-          seenIds.add(meta.id);
-          results.push({
-            stickerId: meta.id,
-            number: meta.number,
-            playerName: meta.playerName,
-            country: meta.country,
-            confidence: 0.92,
-            isOwned: false,
-            boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
-          });
-        } else if (!meta) {
-          // Sticker identified by Claude but not found in database — show anyway
-          const fallbackId = `unknown_${normalize(item.name)}`;
-          if (!seenIds.has(fallbackId)) {
-            seenIds.add(fallbackId);
-            results.push({
-              stickerId: fallbackId,
-              number: item.number ?? 0,
-              playerName: item.name,
-              country: item.country ?? '???',
-              confidence: 0.5,
-              isOwned: false,
-              boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
-            });
-          }
-        }
+        const stickerId = buildStickerId(item.country, item.number ?? null, item.name);
+        if (seenIds.has(stickerId)) continue;
+        seenIds.add(stickerId);
+        results.push({
+          stickerId,
+          number: item.number ?? 0,
+          playerName: item.name,
+          country: (item.country ?? 'UNK').toUpperCase().slice(0, 3),
+          confidence: 0.92,
+          isOwned: false,
+          boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
+        });
       }
-      if (results.length === 0) this.log('nenhum match encontrado');
+
+      if (results.length === 0) this.log('nenhum sticker detectado');
       return results;
     } catch (e: any) {
       this.log(`ERR: ${e?.message ?? e}`);
