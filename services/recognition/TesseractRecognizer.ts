@@ -13,6 +13,7 @@ interface StickerMeta {
 
 const byNumber = new Map<number, StickerMeta>();
 const byNameWord = new Map<string, StickerMeta[]>();
+const byCountry = new Map<string, StickerMeta[]>();
 
 function normalize(s: string) {
   return s
@@ -33,6 +34,8 @@ albumData.pages.forEach((p) =>
         if (!byNameWord.has(key)) byNameWord.set(key, []);
         byNameWord.get(key)!.push(meta);
       });
+      if (!byCountry.has(c.code)) byCountry.set(c.code, []);
+      byCountry.get(c.code)!.push(meta);
     })
   )
 );
@@ -64,16 +67,27 @@ function clusterWords(words: OcrWord[], imgH: number): OcrWord[][] {
   return clusters;
 }
 
+// Known 3-letter country codes in the album
+const COUNTRY_CODES = new Set(Array.from(byCountry.keys()));
+
 function matchCluster(cluster: OcrWord[]): StickerMeta | null {
   let numberMatch: StickerMeta | null = null;
   let nameMatch: StickerMeta | null = null;
+  let countryPool: StickerMeta[] | null = null;
 
   for (const w of cluster) {
+    // Number match: 1-3 digit sequence matching a sticker number
     const digits = w.text.replace(/\D/g, '');
     const num = parseInt(digits, 10);
     if (digits.length >= 1 && digits.length <= 3 && num >= 1 && num <= 980 && byNumber.has(num)) {
       numberMatch = byNumber.get(num)!;
     }
+    // Country code match: e.g. "(ESP)" or "ESP" → narrows pool
+    const upper = w.text.toUpperCase().replace(/[^A-Z]/g, '');
+    if (upper.length === 3 && COUNTRY_CODES.has(upper)) {
+      countryPool = byCountry.get(upper)!;
+    }
+    // Name word match
     const key = normalize(w.text);
     if (key.length >= 3) {
       const candidates = byNameWord.get(key);
@@ -90,7 +104,12 @@ function matchCluster(cluster: OcrWord[]): StickerMeta | null {
   // Number confirmed by name → most reliable
   if (numberMatch && nameMatch && numberMatch.id === nameMatch.id) return numberMatch;
   if (numberMatch) return numberMatch;
-  if (nameMatch) return nameMatch;
+  // Name match (possibly narrowed by country)
+  if (nameMatch) {
+    if (countryPool && !countryPool.find(m => m.id === nameMatch!.id)) return null;
+    return nameMatch;
+  }
+  // Country-only: only if exactly one player (not useful, skip)
   return null;
 }
 
@@ -132,9 +151,8 @@ export class TesseractRecognizer implements IStickerRecognizer {
 
     const { data } = await this.worker.recognize(frame);
 
-    const rawText = data.text?.replace(/\n/g, ' ').trim().slice(0, 200) ?? '';
+    const rawText = data.text?.replace(/\n/g, ' ').trim().slice(0, 300) ?? '';
     console.log('[OCR] texto:', rawText);
-    // Expose raw text to debug panel via global
     if (typeof (globalThis as any).__ocrDebug === 'function') (globalThis as any).__ocrDebug(rawText);
 
     const allWords: OcrWord[] = [];
@@ -168,6 +186,29 @@ export class TesseractRecognizer implements IStickerRecognizer {
         isOwned: false,
         boundingBox: clusterBBox(cluster, imgW, imgH),
       });
+    }
+
+    // Fallback: scan full normalized raw text for any known name fragment (≥6 chars)
+    if (found.length === 0) {
+      const normText = normalize(rawText);
+      for (const [key, metas] of byNameWord) {
+        if (key.length < 6) continue;
+        if (normText.includes(key)) {
+          for (const meta of metas) {
+            if (seenIds.has(meta.id)) continue;
+            seenIds.add(meta.id);
+            found.push({
+              stickerId: meta.id,
+              number: meta.number,
+              playerName: meta.playerName,
+              country: meta.country,
+              confidence: 0.5,
+              isOwned: false,
+              boundingBox: { x: 0.1, y: 0.55, width: 0.8, height: 0.4 },
+            });
+          }
+        }
+      }
     }
 
     return found;

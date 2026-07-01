@@ -62,19 +62,25 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
           img.src = URL.createObjectURL(file);
           await new Promise(r => { img.onload = r; });
 
-          // Downscale to max 1400px — Tesseract.js trava com imagens 12MP do iPhone
-          const MAX = 1400;
-          const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
-          const W = Math.round(img.naturalWidth * scale);
-          const H = Math.round(img.naturalHeight * scale);
+          const iW = img.naturalWidth;
+          const iH = img.naturalHeight;
+
+          // Crop bottom 45% of image (where player name band lives on Panini stickers)
+          // then upscale to ~1400px wide so Tesseract gets clean text
+          const cropY = Math.round(iH * 0.55);
+          const cropH = iH - cropY;
+          const TARGET_W = 1400;
+          const upscale = TARGET_W / iW;
+          const outW = TARGET_W;
+          const outH = Math.round(cropH * upscale);
 
           const canvas = document.createElement('canvas');
-          canvas.width = W;
-          canvas.height = H;
+          canvas.width = outW;
+          canvas.height = outH;
           const ctx = canvas.getContext('2d')!;
           // Grayscale + contraste para melhorar OCR
           ctx.filter = 'grayscale(1) contrast(2.5) brightness(1.1)';
-          ctx.drawImage(img, 0, 0, W, H);
+          ctx.drawImage(img, 0, cropY, iW, cropH, 0, 0, outW, outH);
           URL.revokeObjectURL(img.src);
 
           resolve(canvas.toDataURL('image/jpeg', 0.90));
