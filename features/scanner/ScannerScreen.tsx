@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Platform,
   ScrollView,
+  Animated,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +19,8 @@ import type { DetectedSticker } from '@/types';
 
 export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
+  const [addBtnGreen, setAddBtnGreen] = useState(false);
+  const rowAnimsRef = useRef<Animated.Value[]>([]);
 
   const log = useCallback((msg: string) => { console.log('[DBG]', msg); }, []);
 
@@ -27,6 +30,37 @@ export function ScannerScreen() {
 
   const { ocrReady, scanning, scanError, detectedStickers, newStickers, scan, startAutoScan, addNewStickers, dismiss } =
     useScanner(cameraRef as any, log);
+
+  // Ensure anim values match sticker count
+  while (rowAnimsRef.current.length < detectedStickers.length) {
+    rowAnimsRef.current.push(new Animated.Value(1));
+  }
+  if (rowAnimsRef.current.length > detectedStickers.length) {
+    rowAnimsRef.current = rowAnimsRef.current.slice(0, detectedStickers.length);
+  }
+
+  const handleAdd = useCallback(() => {
+    const anims = rowAnimsRef.current;
+    if (anims.length === 0) { addNewStickers(); return; }
+
+    const staggered = anims.map((anim, i) =>
+      Animated.sequence([
+        Animated.delay(i * 60),
+        Animated.parallel([
+          Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }),
+        ]),
+      ])
+    );
+
+    Animated.parallel(staggered).start(() => {
+      setAddBtnGreen(true);
+      addNewStickers();
+      setTimeout(() => {
+        setAddBtnGreen(false);
+        anims.forEach(a => a.setValue(1));
+      }, 800);
+    });
+  }, [addNewStickers]);
 
   // Inicia auto-scan após câmera web inicializar
   useEffect(() => {
@@ -138,8 +172,8 @@ export function ScannerScreen() {
           </View>
         ) : (
           <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
-            {detectedStickers.map((s) => (
-              <StickerRow key={s.stickerId} sticker={s} />
+            {detectedStickers.map((s, i) => (
+              <StickerRow key={s.stickerId} sticker={s} anim={rowAnimsRef.current[i]} />
             ))}
           </ScrollView>
         )}
@@ -150,9 +184,12 @@ export function ScannerScreen() {
               <Text style={styles.dismissBtnText}>Descartar</Text>
             </Pressable>
             {newStickers.length > 0 && (
-              <Pressable style={[styles.addAllBtn, { flex: 1 }]} onPress={addNewStickers}>
+              <Pressable
+                style={[styles.addAllBtn, { flex: 1 }, addBtnGreen && styles.addAllBtnGreen]}
+                onPress={handleAdd}
+              >
                 <Text style={styles.addAllText}>
-                  Adicionar {newStickers.length} nova{newStickers.length !== 1 ? 's' : ''}
+                  {addBtnGreen ? '✓ Adicionadas!' : `Adicionar ${newStickers.length} nova${newStickers.length !== 1 ? 's' : ''}`}
                 </Text>
               </Pressable>
             )}
@@ -163,23 +200,20 @@ export function ScannerScreen() {
   );
 }
 
-function StickerRow({ sticker }: { sticker: DetectedSticker }) {
+function StickerRow({ sticker, anim }: { sticker: DetectedSticker; anim?: Animated.Value }) {
   const isOwned = sticker.isOwned;
   return (
-    <View style={styles.row}>
-      <View style={[styles.rowIcon, isOwned ? styles.rowIconOwned : styles.rowIconNew]}>
-        <Text style={styles.rowIconText}>{isOwned ? '✓' : '+'}</Text>
-      </View>
+    <Animated.View style={[styles.row, anim && { opacity: anim, transform: [{ scale: anim }] }]}>
       <View style={styles.rowInfo}>
         <Text style={styles.rowName}>{sticker.playerName}</Text>
         <Text style={styles.rowSub}>{sticker.stickerId} · {sticker.country}</Text>
       </View>
-      <View style={[styles.rowBadge, isOwned ? styles.rowBadgeOwned : styles.rowBadgeNew]}>
-        <Text style={[styles.rowBadgeText, isOwned ? styles.rowBadgeTextOwned : styles.rowBadgeTextNew]}>
+      <View style={[styles.rowBadge, isOwned ? styles.rowBadgeRepeat : styles.rowBadgeNew]}>
+        <Text style={[styles.rowBadgeText, isOwned ? styles.rowBadgeTextRepeat : styles.rowBadgeTextNew]}>
           {isOwned ? 'repetida' : 'nova'}
         </Text>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -307,16 +341,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: C.border,
   },
-  rowIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rowIconNew: { backgroundColor: C.accent },
-  rowIconOwned: { backgroundColor: C.surface2 },
-  rowIconText: { color: '#000', fontWeight: '800', fontSize: 16 },
   rowInfo: { flex: 1 },
   rowName: { fontSize: 15, fontWeight: '600', color: C.text },
   rowSub: { fontSize: 12, color: C.textMuted, marginTop: 2 },
@@ -326,10 +350,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   rowBadgeNew: { backgroundColor: 'rgba(74,222,128,0.15)' },
-  rowBadgeOwned: { backgroundColor: C.surface2 },
+  rowBadgeRepeat: { backgroundColor: 'rgba(248,113,113,0.15)' },
   rowBadgeText: { fontSize: 12, fontWeight: '700' },
   rowBadgeTextNew: { color: C.success },
-  rowBadgeTextOwned: { color: C.textMuted },
+  rowBadgeTextRepeat: { color: C.danger },
 
   // Action row
   actionRow: {
@@ -353,5 +377,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
   },
+  addAllBtnGreen: { backgroundColor: C.success },
   addAllText: { color: '#000', fontWeight: '800', fontSize: 15 },
 });
