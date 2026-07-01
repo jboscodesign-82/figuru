@@ -43,28 +43,51 @@ albumData.pages.forEach((p) =>
 function findBestMatch(name: string, number: number | null, country: string | null): StickerMeta | null {
   // Try number first (most reliable)
   if (number && byNumber.has(number)) {
-    return byNumber.get(number)!;
+    const m = byNumber.get(number)!;
+    // Validate: country must match if provided
+    if (!country || m.country === country) return m;
   }
 
-  // Score all stickers by name word overlap
-  const normName = normalize(name);
+  // Split Claude's identified name into words and score stickers by overlap
+  const queryWords = name.split(/\s+/).map(normalize).filter(w => w.length >= 3);
+  if (queryWords.length === 0) return null;
+
   const scored = new Map<string, number>();
 
-  for (const [key, metas] of byNameWord) {
-    if (key.length < 3) continue;
-    if (normName.includes(key) || key.includes(normName.slice(0, Math.max(3, normName.length - 1)))) {
-      const pts = key.length;
-      for (const m of metas) {
-        // Boost if country matches
-        const countryBoost = (country && m.country === country) ? 5 : 0;
+  for (const qw of queryWords) {
+    // Exact word match in index
+    if (byNameWord.has(qw)) {
+      const pts = qw.length * 3; // strong signal
+      for (const m of byNameWord.get(qw)!) {
+        const countryBoost = (country && m.country === country) ? 10 : 0;
         scored.set(m.id, (scored.get(m.id) ?? 0) + pts + countryBoost);
+      }
+    }
+    // Substring: query word contained in a known name word (e.g. "CALHANO" inside "CALHANOGLU")
+    for (const [key, metas] of byNameWord) {
+      if (key === qw) continue; // already handled above
+      if (key.length >= 5 && key.includes(qw) && qw.length >= 4) {
+        const pts = qw.length; // weaker signal
+        for (const m of metas) {
+          const countryBoost = (country && m.country === country) ? 10 : 0;
+          scored.set(m.id, (scored.get(m.id) ?? 0) + pts + countryBoost);
+        }
       }
     }
   }
 
   if (scored.size === 0) return null;
-  const [bestId] = [...scored.entries()].sort((a, b) => b[1] - a[1])[0];
-  return byId.get(bestId) ?? null;
+
+  // Filter by country if provided (exclude stickers from wrong country unless no other candidates)
+  const entries = [...scored.entries()].sort((a, b) => b[1] - a[1]);
+  if (country) {
+    const countryFiltered = entries.filter(([id]) => byId.get(id)?.country === country);
+    if (countryFiltered.length > 0) {
+      return byId.get(countryFiltered[0][0]) ?? null;
+    }
+  }
+
+  return byId.get(entries[0][0]) ?? null;
 }
 
 // ─── Recognizer ────────────────────────────────────────────────────────────
