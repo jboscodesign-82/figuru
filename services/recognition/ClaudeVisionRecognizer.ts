@@ -88,16 +88,16 @@ export function setClaudeApiKey(key: string) {
   } catch { /* noop */ }
 }
 
-const PROMPT = `You are analyzing a Panini FIFA World Cup 2026 sticker card.
-Look at the sticker and extract the following information:
-- Player full name (as printed on sticker, usually at the bottom)
-- Sticker number (a 1-3 digit number, if visible)
+const PROMPT = `You are analyzing a photo that may contain one or more Panini FIFA World Cup 2026 sticker cards.
+Identify ALL stickers visible in the image. For each sticker extract:
+- Player full name (as printed on the sticker, usually at the bottom band)
+- Sticker number (1-3 digit number, if visible)
 - Country code (3-letter code like FRA, ESP, BRA, ARG — look for the flag or text)
 
-Respond with ONLY valid JSON, no explanation:
-{"name": "PLAYER NAME", "number": 123, "country": "FRA"}
+Respond with ONLY valid JSON array, no explanation:
+[{"name": "PLAYER NAME", "number": 123, "country": "FRA"}, {"name": "OTHER PLAYER", "number": null, "country": "BRA"}]
 
-If you cannot find a field, use null. Always respond with valid JSON.`;
+If only one sticker, still return an array with one element. Use null for fields you cannot read.`;
 
 export class ClaudeVisionRecognizer implements IStickerRecognizer {
   private log: (msg: string) => void;
@@ -152,26 +152,34 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
       const text = json.content?.[0]?.text ?? '';
       this.log(`Claude: ${text.slice(0, 80)}`);
 
-      // Remove markdown code fences e extrai o JSON via regex
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      // Extrai JSON (array ou objeto) via regex
+      const jsonMatch = text.match(/\[[\s\S]*\]/) ?? text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) { this.log('sem JSON na resposta'); return []; }
       const parsed = JSON.parse(jsonMatch[0]);
-      const { name, number, country } = parsed as { name?: string; number?: number; country?: string };
+      const items: { name?: string; number?: number; country?: string }[] =
+        Array.isArray(parsed) ? parsed : [parsed];
 
-      if (!name) { this.log('sem nome na resposta'); return []; }
+      this.log(`Claude identificou ${items.length} figurinha(s)`);
 
-      const meta = findBestMatch(name ?? '', number ?? null, country ?? null);
-      if (!meta) { this.log(`sem match para "${name}"`); return []; }
-
-      return [{
-        stickerId: meta.id,
-        number: meta.number,
-        playerName: meta.playerName,
-        country: meta.country,
-        confidence: 0.92,
-        isOwned: false,
-        boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
-      }];
+      const results: DetectedSticker[] = [];
+      const seenIds = new Set<string>();
+      for (const item of items) {
+        if (!item.name) continue;
+        const meta = findBestMatch(item.name, item.number ?? null, item.country ?? null);
+        if (!meta || seenIds.has(meta.id)) continue;
+        seenIds.add(meta.id);
+        results.push({
+          stickerId: meta.id,
+          number: meta.number,
+          playerName: meta.playerName,
+          country: meta.country,
+          confidence: 0.92,
+          isOwned: false,
+          boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
+        });
+      }
+      if (results.length === 0) this.log('nenhum match encontrado');
+      return results;
     } catch (e: any) {
       this.log(`ERR: ${e?.message ?? e}`);
       return [];
