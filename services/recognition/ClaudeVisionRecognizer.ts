@@ -36,18 +36,19 @@ function buildStickerId(country: string | null | undefined, number: number | nul
 
 // ─── Prompt ────────────────────────────────────────────────────────────────
 
-const PROMPT = `You are reading the BACK of one or more Panini FIFA World Cup 2026 stickers.
-The back of each sticker shows a 3-letter country code and a number from 1 to 20 (e.g. "FRA 14", "BRA 7", "USA 3").
-Valid country codes: MEX RSA KOR CZE CAN BIH QAT SUI BRA MAR HAI SCO USA PAR AUS TUR GER CUW CIV ECU NED JPN SWE TUN BEL EGY IRN NZL ESP CPV KSA URU FRA SEN IRQ NOR ARG ALG AUT JOR POR COD UZB COL ENG CRO GHA PAN FWC CC
+const PROMPT = `You are reading the BACK of Panini FIFA World Cup 2026 sticker cards.
+The back of each sticker clearly shows a 3-letter country code AND a number 1-20 printed together (e.g. "FRA 14", "BRA 7", "USA 3").
 
-For EACH sticker visible, extract:
-- country: the 3-letter code exactly as printed
-- number: the number (integer 0-20, or for CC stickers the numeric part of "CC1"-"CC14")
+IMPORTANT RULES:
+- Only return results if you can CLEARLY and CONFIDENTLY read BOTH the country code AND the number from an actual sticker back in the image.
+- If the image does not show a sticker back, or the text is blurry/unclear, return an empty array [].
+- Do NOT guess or infer — only report what is explicitly visible.
+- Valid country codes: MEX RSA KOR CZE CAN BIH QAT SUI BRA MAR HAI SCO USA PAR AUS TUR GER CUW CIV ECU NED JPN SWE TUN BEL EGY IRN NZL ESP CPV KSA URU FRA SEN IRQ NOR ARG ALG AUT JOR POR COD UZB COL ENG CRO GHA PAN FWC CC
 
-Respond with ONLY a valid JSON array, no explanation:
-[{"country": "FRA", "number": 14}, {"country": "BRA", "number": 7}]
+Respond with ONLY a valid JSON array:
+[{"country": "FRA", "number": 14}]
 
-If only one sticker is visible, still return an array with one element. Use null for fields you cannot read.`;
+If no sticker back is clearly visible, respond with exactly: []`;
 
 // ─── Recognizer ────────────────────────────────────────────────────────────
 
