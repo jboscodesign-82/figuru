@@ -33,7 +33,7 @@ export function StickerToggle({ sticker, position, owned, onToggle }: Props) {
         <Text style={styles.icon}>{owned ? '✓' : icon}</Text>
       ) : (
         <Text style={[styles.number, owned && styles.numberOwned]}>
-          {owned ? '✓' : position}
+          {owned ? '✓' : sticker.number}
         </Text>
       )}
       <Text style={[styles.name, owned && styles.nameOwned]} numberOfLines={1}>

@@ -36,16 +36,18 @@ function buildStickerId(country: string | null | undefined, number: number | nul
 
 // ─── Prompt ────────────────────────────────────────────────────────────────
 
-const PROMPT = `You are analyzing a photo that may contain one or more Panini FIFA World Cup 2026 sticker cards.
-Identify ALL stickers visible in the image. For each sticker extract:
-- Player full name (as printed on the sticker, usually at the bottom band)
-- Sticker number (1-3 digit number printed on the sticker, if visible)
-- Country code (3-letter FIFA code like FRA, ESP, BRA, ARG, USA, GER, TUR — look for the flag or text)
+const PROMPT = `You are reading the BACK of one or more Panini FIFA World Cup 2026 stickers.
+The back of each sticker shows a 3-letter country code and a number from 1 to 20 (e.g. "FRA 14", "BRA 7", "USA 3").
+Valid country codes: MEX RSA KOR CZE CAN BIH QAT SUI BRA MAR HAI SCO USA PAR AUS TUR GER CUW CIV ECU NED JPN SWE TUN BEL EGY IRN NZL ESP CPV KSA URU FRA SEN IRQ NOR ARG ALG AUT JOR POR COD UZB COL ENG CRO GHA PAN FWC CC
 
-Respond with ONLY valid JSON array, no explanation:
-[{"name": "PLAYER NAME", "number": 123, "country": "FRA"}, {"name": "OTHER PLAYER", "number": null, "country": "BRA"}]
+For EACH sticker visible, extract:
+- country: the 3-letter code exactly as printed
+- number: the number (integer 0-20, or for CC stickers the numeric part of "CC1"-"CC14")
 
-If only one sticker, still return an array with one element. Use null for fields you cannot read.`;
+Respond with ONLY a valid JSON array, no explanation:
+[{"country": "FRA", "number": 14}, {"country": "BRA", "number": 7}]
+
+If only one sticker is visible, still return an array with one element. Use null for fields you cannot read.`;
 
 // ─── Recognizer ────────────────────────────────────────────────────────────
 
@@ -104,24 +106,26 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
       const jsonMatch = text.match(/\[[\s\S]*\]/) ?? text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) { this.log('sem JSON na resposta'); return []; }
       const parsed = JSON.parse(jsonMatch[0]);
-      const items: { name?: string; number?: number | null; country?: string }[] =
+      const items: { country?: string; number?: number | null; name?: string }[] =
         Array.isArray(parsed) ? parsed : [parsed];
 
-      this.log(`Claude identificou ${items.length} figurinha(s): ${items.map(i => `${i.name}(${i.country ?? '?'}#${i.number ?? '?'})`).join(', ').slice(0, 150)}`);
+      this.log(`Claude leu ${items.length} figurinha(s): ${items.map(i => `${i.country ?? '?'}#${i.number ?? '?'}`).join(', ')}`);
 
       const results: DetectedSticker[] = [];
       const seenIds = new Set<string>();
 
       for (const item of items) {
-        if (!item.name) continue;
-        const stickerId = buildStickerId(item.country, item.number ?? null, item.name);
+        const country = (item.country ?? '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+        if (!country) continue;
+        const num = item.number ?? null;
+        const stickerId = buildStickerId(country, num, item.name ?? country);
         if (seenIds.has(stickerId)) continue;
         seenIds.add(stickerId);
         results.push({
           stickerId,
-          number: item.number ?? 0,
-          playerName: item.name,
-          country: (item.country ?? 'UNK').toUpperCase().slice(0, 3),
+          number: num ?? 0,
+          playerName: item.name ?? `${country} #${num ?? '?'}`,
+          country,
           confidence: 0.92,
           isOwned: false,
           boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
