@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,24 +6,20 @@ import {
   Pressable,
   ActivityIndicator,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useScanner } from './useScanner';
-import { OverlayBox } from './components/OverlayBox';
-import { AddStickersButton } from './components/AddStickersButton';
 import { WebCamera, WebCameraHandle } from './components/WebCamera';
 import { C } from '@/constants/colors';
+import type { DetectedSticker } from '@/types';
 
 export function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const [debugLines, setDebugLines] = useState<string[]>(['aguardando...']);
 
-  const log = useCallback((msg: string) => {
-    console.log('[DBG]', msg);
-    setDebugLines(prev => [...prev.slice(-5), msg]);
-  }, []);
+  const log = useCallback((msg: string) => { console.log('[DBG]', msg); }, []);
 
   const nativeCamRef = useRef<CameraView>(null);
   const webCamRef = useRef<WebCameraHandle>(null);
@@ -32,7 +28,6 @@ export function ScannerScreen() {
   const { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers } =
     useScanner(cameraRef as any, log);
 
-  // On web, permissions are handled by the browser — skip Expo permission flow
   if (Platform.OS !== 'web') {
     if (!permission) {
       return (
@@ -62,84 +57,102 @@ export function ScannerScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Camera — web uses native getUserMedia, native uses CameraView */}
-      {Platform.OS === 'web' ? (
-        <WebCamera ref={webCamRef} />
-      ) : (
-        <CameraView ref={nativeCamRef} style={StyleSheet.absoluteFill} facing="back" />
-      )}
+      {/* ── Camera area ── */}
+      <View style={styles.cameraArea}>
+        {Platform.OS === 'web' ? (
+          <WebCamera ref={webCamRef} />
+        ) : (
+          <CameraView ref={nativeCamRef} style={StyleSheet.absoluteFill} facing="back" />
+        )}
 
-      {/* Detection overlays */}
-      {detectedStickers.map((sticker) => (
-        <OverlayBox key={sticker.stickerId} sticker={sticker} />
-      ))}
+        {/* Top HUD */}
+        <SafeAreaView style={styles.hud} edges={['top']}>
+          <View style={styles.hudInner}>
+            <Pressable onPress={() => router.back()} style={styles.closeBtn}>
+              <Text style={styles.closeBtnText}>✕</Text>
+            </Pressable>
+            <View style={styles.hudStatus}>
+              <View style={[styles.dot, ocrReady && styles.dotReady]} />
+              <Text style={styles.hudText}>
+                {scanning ? 'Reconhecendo…' : ocrReady ? 'Pronto para escanear' : 'Carregando…'}
+              </Text>
+            </View>
+          </View>
+        </SafeAreaView>
 
-      {/* Top HUD */}
-      <SafeAreaView style={styles.hud} edges={['top']}>
-        <View style={styles.hudInner}>
-          <Pressable onPress={() => router.back()} style={styles.closeBtn}>
-            <Text style={styles.closeBtnText}>✕</Text>
+        {/* Viewfinder corners */}
+        <View style={styles.viewfinder} pointerEvents="none">
+          <View style={[styles.corner, styles.tl]} />
+          <View style={[styles.corner, styles.tr]} />
+          <View style={[styles.corner, styles.bl]} />
+          <View style={[styles.corner, styles.br]} />
+        </View>
+
+        {/* Scan button */}
+        <View style={styles.scanBtnWrapper}>
+          <Pressable style={[styles.scanBtn, scanning && styles.scanBtnDisabled]} onPress={scan}>
+            {scanning
+              ? <ActivityIndicator color="#000" />
+              : <Text style={styles.scanBtnIcon}>📷</Text>
+            }
           </Pressable>
+          <Text style={styles.scanBtnLabel}>
+            {scanning ? 'Lendo…' : 'Escanear figurinha'}
+          </Text>
+        </View>
+      </View>
 
-          <View style={styles.hudInfo}>
-            <View style={[styles.dot, ocrReady && styles.dotReady]} />
-            <Text style={styles.hudText}>
-              {ocrReady ? 'Pronto para escanear' : 'Carregando OCR…'}
+      {/* ── Results panel ── */}
+      <View style={styles.panel}>
+        <View style={styles.panelHeader}>
+          <Text style={styles.panelTitle}>Figurinhas detectadas</Text>
+          {detectedStickers.length > 0 && (
+            <Text style={styles.panelCount}>{detectedStickers.length}</Text>
+          )}
+        </View>
+
+        {detectedStickers.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>
+              {scanning ? 'Analisando imagem…' : 'Aponte para uma figurinha e escaneie'}
             </Text>
           </View>
+        ) : (
+          <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+            {detectedStickers.map((s) => (
+              <StickerRow key={s.stickerId} sticker={s} />
+            ))}
+          </ScrollView>
+        )}
 
-          <View style={styles.hudPills}>
-            {detectedStickers.length > 0 && (
-              <View style={styles.pill}>
-                <Text style={styles.pillText}>
-                  {detectedStickers.length} detectada{detectedStickers.length !== 1 ? 's' : ''}
-                </Text>
-              </View>
-            )}
-            {newStickers.length > 0 && (
-              <View style={[styles.pill, styles.pillBlue]}>
-                <Text style={[styles.pillText, styles.pillTextBlue]}>
-                  {newStickers.length} nova{newStickers.length !== 1 ? 's' : ''}
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </SafeAreaView>
-
-      {/* Viewfinder corners */}
-      <View style={styles.viewfinder} pointerEvents="none">
-        <View style={[styles.corner, styles.tl]} />
-        <View style={[styles.corner, styles.tr]} />
-        <View style={[styles.corner, styles.bl]} />
-        <View style={[styles.corner, styles.br]} />
+        {newStickers.length > 0 && (
+          <Pressable style={styles.addAllBtn} onPress={addNewStickers}>
+            <Text style={styles.addAllText}>
+              Adicionar {newStickers.length} nova{newStickers.length !== 1 ? 's' : ''} ao álbum
+            </Text>
+          </Pressable>
+        )}
       </View>
+    </View>
+  );
+}
 
-      {/* Scan button */}
-      <View style={styles.scanBtnWrapper}>
-        <Pressable
-          style={[styles.scanBtn, scanning && styles.scanBtnDisabled]}
-          onPress={scan}
-        >
-          {scanning ? (
-            <ActivityIndicator color="#000" />
-          ) : (
-            <Text style={styles.scanBtnIcon}>📷</Text>
-          )}
-        </Pressable>
-        <Text style={styles.scanBtnLabel}>
-          {scanning ? 'Lendo…' : ocrReady ? 'Escanear figurinha' : 'Carregando…'}
+function StickerRow({ sticker }: { sticker: DetectedSticker }) {
+  const isOwned = sticker.isOwned;
+  return (
+    <View style={styles.row}>
+      <View style={[styles.rowIcon, isOwned ? styles.rowIconOwned : styles.rowIconNew]}>
+        <Text style={styles.rowIconText}>{isOwned ? '✓' : '+'}</Text>
+      </View>
+      <View style={styles.rowInfo}>
+        <Text style={styles.rowName}>{sticker.playerName}</Text>
+        <Text style={styles.rowSub}>{sticker.stickerId} · {sticker.country}</Text>
+      </View>
+      <View style={[styles.rowBadge, isOwned ? styles.rowBadgeOwned : styles.rowBadgeNew]}>
+        <Text style={[styles.rowBadgeText, isOwned ? styles.rowBadgeTextOwned : styles.rowBadgeTextNew]}>
+          {isOwned ? 'repetida' : 'nova'}
         </Text>
       </View>
-
-      {/* Debug panel */}
-      <View style={styles.debugPanel}>
-        {debugLines.map((l, i) => (
-          <Text key={i} style={styles.debugText}>{l}</Text>
-        ))}
-      </View>
-
-      <AddStickersButton count={newStickers.length} onPress={addNewStickers} />
     </View>
   );
 }
@@ -148,7 +161,7 @@ const CORNER_SIZE = 24;
 const CORNER_THICKNESS = 3;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: { flex: 1, backgroundColor: C.bg },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -169,6 +182,14 @@ const styles = StyleSheet.create({
   permBtnText: { color: '#000', fontWeight: '700', fontSize: 15 },
   backBtn: { marginTop: 4 },
   backBtnText: { color: C.textMuted, fontSize: 14 },
+
+  // Camera
+  cameraArea: {
+    height: '55%',
+    backgroundColor: '#000',
+    position: 'relative',
+    overflow: 'hidden',
+  },
   hud: { position: 'absolute', top: 0, left: 0, right: 0 },
   hudInner: { marginHorizontal: 16, marginTop: 8, gap: 8 },
   closeBtn: {
@@ -181,68 +202,115 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   closeBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  hudInfo: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center' },
+  hudStatus: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'center' },
   dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: C.danger },
   dotReady: { backgroundColor: C.success },
   hudText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  hudPills: { flexDirection: 'row', gap: 8, justifyContent: 'center' },
-  pill: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  pillBlue: { backgroundColor: 'rgba(76,201,240,0.25)' },
-  pillText: { color: '#fff', fontSize: 12, fontWeight: '600' },
-  pillTextBlue: { color: C.accentBlue },
-  viewfinder: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  viewfinder: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center' },
   corner: {
     position: 'absolute',
     width: CORNER_SIZE,
     height: CORNER_SIZE,
     borderColor: 'rgba(255,255,255,0.8)',
   },
-  tl: { top: '30%', left: '10%', borderTopWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderTopLeftRadius: 4 },
-  tr: { top: '30%', right: '10%', borderTopWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderTopRightRadius: 4 },
-  bl: { top: '68%', left: '10%', borderBottomWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderBottomLeftRadius: 4 },
-  br: { top: '68%', right: '10%', borderBottomWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderBottomRightRadius: 4 },
+  tl: { top: '20%', left: '10%', borderTopWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderTopLeftRadius: 4 },
+  tr: { top: '20%', right: '10%', borderTopWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderTopRightRadius: 4 },
+  bl: { top: '72%', left: '10%', borderBottomWidth: CORNER_THICKNESS, borderLeftWidth: CORNER_THICKNESS, borderBottomLeftRadius: 4 },
+  br: { top: '72%', right: '10%', borderBottomWidth: CORNER_THICKNESS, borderRightWidth: CORNER_THICKNESS, borderBottomRightRadius: 4 },
   scanBtnWrapper: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 16,
     left: 0,
     right: 0,
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   scanBtn: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: C.accentBlue,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: C.accentBlue,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.6,
-    shadowRadius: 16,
+    shadowRadius: 12,
     elevation: 10,
   },
   scanBtnDisabled: { opacity: 0.4 },
-  scanBtnIcon: { fontSize: 28 },
-  scanBtnLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: '600' },
-  debugPanel: {
-    position: 'absolute',
-    top: 140,
-    left: 12,
-    right: 12,
-    backgroundColor: 'rgba(0,0,0,0.75)',
-    borderRadius: 8,
-    padding: 8,
-    gap: 2,
+  scanBtnIcon: { fontSize: 26 },
+  scanBtnLabel: { color: 'rgba(255,255,255,0.85)', fontSize: 12, fontWeight: '600' },
+
+  // Results panel
+  panel: {
+    flex: 1,
+    backgroundColor: C.bg,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
-  debugText: { color: '#0f0', fontSize: 11, fontFamily: 'monospace' },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  panelTitle: { fontSize: 16, fontWeight: '700', color: C.text },
+  panelCount: {
+    backgroundColor: C.accentBlue,
+    color: '#000',
+    fontSize: 12,
+    fontWeight: '800',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { color: C.textMuted, fontSize: 14, textAlign: 'center' },
+  list: { flex: 1 },
+
+  // Sticker row
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.border,
+  },
+  rowIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowIconNew: { backgroundColor: C.accent },
+  rowIconOwned: { backgroundColor: C.surface2 },
+  rowIconText: { color: '#000', fontWeight: '800', fontSize: 16 },
+  rowInfo: { flex: 1 },
+  rowName: { fontSize: 15, fontWeight: '600', color: C.text },
+  rowSub: { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  rowBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  rowBadgeNew: { backgroundColor: 'rgba(74,222,128,0.15)' },
+  rowBadgeOwned: { backgroundColor: C.surface2 },
+  rowBadgeText: { fontSize: 12, fontWeight: '700' },
+  rowBadgeTextNew: { color: C.success },
+  rowBadgeTextOwned: { color: C.textMuted },
+
+  // Add all button
+  addAllBtn: {
+    backgroundColor: C.accent,
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 16,
+  },
+  addAllText: { color: '#000', fontWeight: '800', fontSize: 15 },
 });
