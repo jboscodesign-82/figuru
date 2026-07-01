@@ -9,7 +9,7 @@ import type { CameraView } from 'expo-camera';
 
 export type CameraRef = React.RefObject<CameraView> | React.RefObject<WebCameraHandle>;
 
-const recognizer = createStickerRecognizer('tesseract');
+const recognizer = createStickerRecognizer('auto');
 
 export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
   const { isOwned, markOwned } = useAlbumStore();

@@ -1,11 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable, Alert, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Alert, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAlbum } from '@/features/album/useAlbum';
+import { getClaudeApiKey, setClaudeApiKey } from '@/services/recognition/ClaudeVisionRecognizer';
 import { C } from '@/constants/colors';
 
 export function SettingsScreen() {
   const { stats, reset } = useAlbum();
+  const [apiKey, setApiKey] = useState(getClaudeApiKey() ?? '');
+  const [saved, setSaved] = useState(false);
+
+  const handleSaveKey = () => {
+    setClaudeApiKey(apiKey.trim());
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   const handleReset = () => {
     Alert.alert(
@@ -67,6 +76,40 @@ export function SettingsScreen() {
           <InfoRow label="Câmera" value="expo-camera" />
           <Divider />
           <InfoRow label="Upgrade" value="vision-camera + Frame Processors" />
+        </View>
+
+        {/* Claude Vision API */}
+        <SectionHeader label="Scanner com IA (Claude Vision)" />
+        <View style={styles.card}>
+          <View style={styles.row}>
+            <Text style={styles.rowLabel}>Motor</Text>
+            <Text style={[styles.rowValue, { color: apiKey ? C.success : C.textMuted }]}>
+              {apiKey ? 'Claude Vision ✓' : 'Tesseract (padrão)'}
+            </Text>
+          </View>
+          <Divider />
+          <View style={[styles.row, { flexDirection: 'column', alignItems: 'flex-start', gap: 8 }]}>
+            <Text style={styles.rowLabel}>Anthropic API Key</Text>
+            <TextInput
+              style={styles.apiInput}
+              value={apiKey}
+              onChangeText={setApiKey}
+              placeholder="sk-ant-..."
+              placeholderTextColor={C.textDim}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <Pressable onPress={handleSaveKey} style={styles.saveBtn}>
+              <Text style={styles.saveBtnText}>{saved ? 'Salvo!' : 'Salvar key'}</Text>
+            </Pressable>
+          </View>
+          <Divider />
+          <View style={styles.row}>
+            <Text style={[styles.rowLabel, { color: C.textMuted, fontSize: 12, flexShrink: 1 }]}>
+              A key fica salva só no seu dispositivo. Obtenha em console.anthropic.com
+            </Text>
+          </View>
         </View>
 
         {/* Danger zone */}
@@ -163,6 +206,26 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(248,113,113,0.3)',
   },
   dangerBtnText: { color: C.danger, fontWeight: '700', fontSize: 15 },
+  apiInput: {
+    width: '100%',
+    backgroundColor: C.surface2,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: C.text,
+    fontSize: 13,
+    fontFamily: 'monospace',
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  saveBtn: {
+    backgroundColor: C.accent,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  saveBtnText: { color: '#000', fontWeight: '700', fontSize: 13 },
   version: {
     textAlign: 'center',
     color: C.textDim,

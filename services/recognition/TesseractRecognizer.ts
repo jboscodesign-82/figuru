@@ -14,6 +14,7 @@ interface StickerMeta {
 const byNumber = new Map<number, StickerMeta>();
 const byNameWord = new Map<string, StickerMeta[]>();
 const byCountry = new Map<string, StickerMeta[]>();
+const byId = new Map<string, StickerMeta>();
 
 function normalize(s: string) {
   return s
@@ -28,6 +29,7 @@ albumData.pages.forEach((p) =>
     c.stickers.forEach((s) => {
       const meta: StickerMeta = { id: s.id, number: s.number, playerName: s.playerName, country: c.code };
       byNumber.set(s.number, meta);
+      byId.set(s.id, meta);
       s.playerName.split(/\s+/).forEach((word) => {
         const key = normalize(word);
         if (key.length < 3) return;
@@ -188,7 +190,7 @@ export class TesseractRecognizer implements IStickerRecognizer {
       });
     }
 
-    // Fallback: scan full normalized raw text for any known name fragment (≥6 chars)
+    // Fallback A: scan full normalized raw text for exact known name fragment (≥6 chars)
     if (found.length === 0) {
       const normText = normalize(rawText);
       for (const [key, metas] of byNameWord) {
@@ -198,16 +200,50 @@ export class TesseractRecognizer implements IStickerRecognizer {
             if (seenIds.has(meta.id)) continue;
             seenIds.add(meta.id);
             found.push({
-              stickerId: meta.id,
-              number: meta.number,
-              playerName: meta.playerName,
-              country: meta.country,
-              confidence: 0.5,
-              isOwned: false,
+              stickerId: meta.id, number: meta.number,
+              playerName: meta.playerName, country: meta.country,
+              confidence: 0.5, isOwned: false,
               boundingBox: { x: 0.1, y: 0.55, width: 0.8, height: 0.4 },
             });
           }
         }
+      }
+    }
+
+    // Fallback B: OCR fragment (≥3 chars) contained inside a known name word (≥7 chars)
+    // e.g. OCR reads "CHO" → found inside "TCHOUAMENI"
+    if (found.length === 0) {
+      const ocrTokens = allWords
+        .map(w => normalize(w.text))
+        .filter(t => t.length >= 3);
+      const scored = new Map<string, number>(); // id → score
+      for (const tok of ocrTokens) {
+        for (const [key, metas] of byNameWord) {
+          if (key.length < 7) continue;
+          if (key.includes(tok)) {
+            const pts = tok.length; // longer match = more points
+            for (const m of metas) {
+              scored.set(m.id, (scored.get(m.id) ?? 0) + pts);
+            }
+          }
+        }
+      }
+      // Take candidates with score ≥ 3 (single 3-char match qualifies)
+      const winners = Array.from(scored.entries())
+        .filter(([, s]) => s >= 3)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+      for (const [id] of winners) {
+        if (seenIds.has(id)) continue;
+        const meta = byId.get(id);
+        if (!meta) continue;
+        seenIds.add(id);
+        found.push({
+          stickerId: meta.id, number: meta.number,
+          playerName: meta.playerName, country: meta.country,
+          confidence: 0.4, isOwned: false,
+          boundingBox: { x: 0.1, y: 0.55, width: 0.8, height: 0.4 },
+        });
       }
     }
 
