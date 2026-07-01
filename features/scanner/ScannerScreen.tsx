@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,12 @@ export function ScannerScreen() {
 
   const { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers } =
     useScanner(cameraRef as any, log);
+
+  // Abre a câmera automaticamente ao entrar na tela
+  useEffect(() => {
+    if (ocrReady) scan();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ocrReady]);
 
   if (Platform.OS !== 'web') {
     if (!permission) {
