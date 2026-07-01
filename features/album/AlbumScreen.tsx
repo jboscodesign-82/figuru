@@ -36,6 +36,7 @@ function Header({
     <View style={styles.header}>
       <Text style={styles.title}>Meu Álbum</Text>
       <Text style={styles.subtitle}>Copa do Mundo 2026</Text>
+      <Text style={{ fontSize: 9, color: C.textMuted, textAlign: 'center' }}>v2026.07.01-c04cdc97</Text>
 
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
