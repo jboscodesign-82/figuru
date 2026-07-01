@@ -95,25 +95,28 @@ export function ScannerScreen() {
           <View style={[styles.corner, styles.br]} />
         </View>
 
-        {/* Scan button */}
-        <View style={styles.scanBtnWrapper}>
-          <Pressable style={[styles.scanBtn, scanning && styles.scanBtnDisabled]} onPress={scan}>
-            {scanning
-              ? <ActivityIndicator color="#000" />
-              : <Text style={styles.scanBtnIcon}>📷</Text>
-            }
-          </Pressable>
-          <Text style={styles.scanBtnLabel}>
-            {scanning ? 'Lendo…' : 'Escanear figurinha'}
-          </Text>
-        </View>
+        {/* Scan button — oculto no web (auto-scan ativo) */}
+        {Platform.OS !== 'web' && (
+          <View style={styles.scanBtnWrapper}>
+            <Pressable style={[styles.scanBtn, scanning && styles.scanBtnDisabled]} onPress={scan}>
+              {scanning
+                ? <ActivityIndicator color="#000" />
+                : <Text style={styles.scanBtnIcon}>📷</Text>
+              }
+            </Pressable>
+            <Text style={styles.scanBtnLabel}>
+              {scanning ? 'Lendo…' : 'Escanear figurinha'}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* ── Results panel ── */}
       <View style={styles.panel}>
         <View style={styles.panelHeader}>
           <Text style={styles.panelTitle}>Figurinhas detectadas</Text>
-          {detectedStickers.length > 0 && (
+          {scanning && <ActivityIndicator size="small" color={C.accentBlue} style={{ marginLeft: 8 }} />}
+          {!scanning && detectedStickers.length > 0 && (
             <Text style={styles.panelCount}>{detectedStickers.length}</Text>
           )}
         </View>
@@ -129,7 +132,7 @@ export function ScannerScreen() {
               </>
             ) : (
               <Text style={styles.emptyText}>
-                {scanning ? 'Analisando imagem…' : 'Aponte para o verso da figurinha e escaneie'}
+                {scanning ? 'Analisando…' : 'Aponte o verso da figurinha para a câmera'}
               </Text>
             )}
           </View>
