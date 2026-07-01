@@ -31,34 +31,32 @@ export function ScannerScreen() {
   const { ocrReady, scanning, scanError, detectedStickers, newStickers, scan, startAutoScan, addNewStickers, dismiss } =
     useScanner(cameraRef as any, log);
 
-  // Ensure anim values match sticker count
-  while (rowAnimsRef.current.length < detectedStickers.length) {
+  // Sync anim array length with sticker count (only grow, never shrink during animation)
+  const stickerCount = detectedStickers.length;
+  while (rowAnimsRef.current.length < stickerCount) {
     rowAnimsRef.current.push(new Animated.Value(1));
-  }
-  if (rowAnimsRef.current.length > detectedStickers.length) {
-    rowAnimsRef.current = rowAnimsRef.current.slice(0, detectedStickers.length);
   }
 
   const handleAdd = useCallback(() => {
-    const anims = rowAnimsRef.current;
-    if (anims.length === 0) { addNewStickers(); return; }
+    const count = rowAnimsRef.current.length;
+    if (count === 0) { addNewStickers(); return; }
 
-    const staggered = anims.map((anim, i) =>
+    // Fade each row out one by one, 120ms apart
+    const staggered = rowAnimsRef.current.map((anim, i) =>
       Animated.sequence([
-        Animated.delay(i * 60),
-        Animated.parallel([
-          Animated.timing(anim, { toValue: 0, duration: 300, useNativeDriver: true }),
-        ]),
+        Animated.delay(i * 120),
+        Animated.timing(anim, { toValue: 0, duration: 250, useNativeDriver: true }),
       ])
     );
 
     Animated.parallel(staggered).start(() => {
       setAddBtnGreen(true);
-      addNewStickers();
+      // Short pause to show green state, then commit
       setTimeout(() => {
+        addNewStickers();
+        rowAnimsRef.current.forEach(a => a.setValue(1));
         setAddBtnGreen(false);
-        anims.forEach(a => a.setValue(1));
-      }, 800);
+      }, 700);
     });
   }, [addNewStickers]);
 
