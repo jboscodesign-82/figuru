@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,8 +25,15 @@ export function ScannerScreen() {
   const webCamRef = useRef<WebCameraHandle>(null);
   const cameraRef = Platform.OS === 'web' ? webCamRef : nativeCamRef;
 
-  const { ocrReady, scanning, scanError, detectedStickers, newStickers, scan, addNewStickers } =
+  const { ocrReady, scanning, scanError, detectedStickers, newStickers, scan, startAutoScan, addNewStickers, dismiss } =
     useScanner(cameraRef as any, log);
+
+  // Inicia auto-scan após câmera web inicializar
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const t = setTimeout(() => startAutoScan(), 1500);
+    return () => clearTimeout(t);
+  }, [startAutoScan]);
 
   if (Platform.OS !== 'web') {
     if (!permission) {
@@ -134,12 +141,19 @@ export function ScannerScreen() {
           </ScrollView>
         )}
 
-        {newStickers.length > 0 && (
-          <Pressable style={styles.addAllBtn} onPress={addNewStickers}>
-            <Text style={styles.addAllText}>
-              Adicionar {newStickers.length} nova{newStickers.length !== 1 ? 's' : ''} ao álbum
-            </Text>
-          </Pressable>
+        {detectedStickers.length > 0 && (
+          <View style={styles.actionRow}>
+            <Pressable style={styles.dismissBtn} onPress={dismiss}>
+              <Text style={styles.dismissBtnText}>Descartar</Text>
+            </Pressable>
+            {newStickers.length > 0 && (
+              <Pressable style={[styles.addAllBtn, { flex: 1 }]} onPress={addNewStickers}>
+                <Text style={styles.addAllText}>
+                  Adicionar {newStickers.length} nova{newStickers.length !== 1 ? 's' : ''}
+                </Text>
+              </Pressable>
+            )}
+          </View>
         )}
       </View>
     </View>
@@ -314,14 +328,27 @@ const styles = StyleSheet.create({
   rowBadgeTextNew: { color: C.success },
   rowBadgeTextOwned: { color: C.textMuted },
 
-  // Add all button
+  // Action row
+  actionRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+    marginBottom: 16,
+  },
+  dismissBtn: {
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: C.border,
+  },
+  dismissBtnText: { color: C.textMuted, fontWeight: '700', fontSize: 15 },
   addAllBtn: {
     backgroundColor: C.accent,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
-    marginTop: 12,
-    marginBottom: 16,
   },
   addAllText: { color: '#000', fontWeight: '800', fontSize: 15 },
 });

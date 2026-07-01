@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
 
 export interface WebCameraHandle {
   takePicture(): Promise<string | null>;
+  captureFrame(): string | null;
 }
 
 export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
@@ -14,7 +14,6 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
 
     async function start() {
       try {
-        // Try exact back camera first, fall back to ideal
         let stream: MediaStream;
         try {
           stream = await navigator.mediaDevices.getUserMedia({
@@ -46,13 +45,31 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
   }, []);
 
   useImperativeHandle(ref, () => ({
+    // Captura frame diretamente do stream de vídeo (para auto-scan)
+    captureFrame(): string | null {
+      const video = videoRef.current;
+      if (!video || video.readyState < 2) return null;
+      const vW = video.videoWidth;
+      const vH = video.videoHeight;
+      if (!vW || !vH) return null;
+
+      const TARGET_W = Math.min(1200, vW);
+      const scale = TARGET_W / vW;
+      const canvas = document.createElement('canvas');
+      canvas.width = TARGET_W;
+      canvas.height = Math.round(vH * scale);
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.85);
+    },
+
+    // Abre câmera nativa (para scan manual com melhor foco)
     async takePicture(): Promise<string | null> {
       return new Promise((resolve) => {
-        // Use native camera via file input — much better autofocus/quality than canvas capture
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        input.capture = 'environment'; // opens back camera on iOS/Android
+        input.capture = 'environment';
 
         input.onchange = async () => {
           const file = input.files?.[0];
@@ -64,21 +81,14 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
 
           const iW = img.naturalWidth;
           const iH = img.naturalHeight;
-
-          // Envia imagem completa para Claude — o verso tem o código no topo
           const TARGET_W = Math.min(1200, iW);
           const scale = TARGET_W / iW;
-          const outW = TARGET_W;
-          const outH = Math.round(iH * scale);
-
           const canvas = document.createElement('canvas');
-          canvas.width = outW;
-          canvas.height = outH;
+          canvas.width = TARGET_W;
+          canvas.height = Math.round(iH * scale);
           const ctx = canvas.getContext('2d')!;
-          ctx.drawImage(img, 0, 0, iW, iH, 0, 0, outW, outH);
-          console.log(`[WebCam] imagem completa: ${iW}x${iH} → ${outW}x${outH}`);
+          ctx.drawImage(img, 0, 0, iW, iH, canvas.width, canvas.height);
           URL.revokeObjectURL(img.src);
-
           resolve(canvas.toDataURL('image/jpeg', 0.90));
         };
 
