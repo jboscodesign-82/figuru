@@ -152,8 +152,10 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
       const text = json.content?.[0]?.text ?? '';
       this.log(`Claude: ${text.slice(0, 80)}`);
 
-      const cleaned = text.replace(/```[a-z]*\n?/g, '').trim();
-      const parsed = JSON.parse(cleaned);
+      // Remove markdown code fences e extrai o JSON via regex
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) { this.log('sem JSON na resposta'); return []; }
+      const parsed = JSON.parse(jsonMatch[0]);
       const { name, number, country } = parsed as { name?: string; number?: number; country?: string };
 
       if (!name) { this.log('sem nome na resposta'); return []; }
