@@ -139,8 +139,6 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   chipOwned: { borderColor: C.success, backgroundColor: 'rgba(74,222,128,0.15)' },
-  chipSpecial: { borderColor: C.accent, backgroundColor: 'rgba(255,215,0,0.06)' },
-  chipSpecialOwned: { borderColor: C.success, backgroundColor: 'rgba(74,222,128,0.15)' },
-  chipNum: { fontSize: 13, fontWeight: '700', color: C.textMuted },
+chipNum: { fontSize: 13, fontWeight: '700', color: C.textMuted },
   chipNumOwned: { color: C.success },
 });
