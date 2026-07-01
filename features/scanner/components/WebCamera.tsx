@@ -49,11 +49,26 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
     async takePicture(): Promise<string | null> {
       const video = videoRef.current;
       if (!video) return null;
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d')!.drawImage(video, 0, 0);
-      return canvas.toDataURL('image/jpeg', 0.85);
+
+      const W = video.videoWidth;
+      const H = video.videoHeight;
+      if (!W || !H) return null;
+
+      // Step 1: draw raw frame
+      const raw = document.createElement('canvas');
+      raw.width = W;
+      raw.height = H;
+      raw.getContext('2d')!.drawImage(video, 0, 0);
+
+      // Step 2: apply grayscale + contrast boost for better OCR
+      const processed = document.createElement('canvas');
+      processed.width = W;
+      processed.height = H;
+      const ctx = processed.getContext('2d')!;
+      ctx.filter = 'grayscale(1) contrast(2) brightness(1.1)';
+      ctx.drawImage(raw, 0, 0);
+
+      return processed.toDataURL('image/jpeg', 0.92);
     },
   }));
 
