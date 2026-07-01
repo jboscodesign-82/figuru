@@ -22,10 +22,14 @@ export function useScanner(cameraRef: CameraRef) {
 
   useEffect(() => {
     mountedRef.current = true;
+    console.log('[Scanner] iniciando OCR...');
     if (recognizer instanceof TesseractRecognizer) {
-      recognizer.init().then(() => {
-        if (mountedRef.current) setOcrReady(true);
-      });
+      recognizer.init()
+        .then(() => {
+          console.log('[Scanner] OCR pronto!');
+          if (mountedRef.current) setOcrReady(true);
+        })
+        .catch((e) => console.error('[Scanner] erro ao iniciar OCR:', e));
     }
     return () => {
       mountedRef.current = false;
@@ -35,32 +39,42 @@ export function useScanner(cameraRef: CameraRef) {
   }, [clearDetections]);
 
   const scan = useCallback(async () => {
-    if (scanning || !cameraRef.current) return;
+    console.log('[Scanner] scan clicado | ocrReady:', ocrReady, '| scanning:', scanning, '| camRef:', !!cameraRef.current);
+    if (scanning) { console.log('[Scanner] ignorado: já está escaneando'); return; }
+    if (!cameraRef.current) { console.log('[Scanner] ignorado: câmera não pronta'); return; }
+
     setScanning(true);
     clearDetections();
     try {
       let uri: string | null = null;
-
-      // Web camera handle has takePicture(), CameraView has takePictureAsync()
       const cam = cameraRef.current as any;
+      console.log('[Scanner] métodos da câmera:', Object.keys(cam));
+
       if (typeof cam.takePicture === 'function') {
+        console.log('[Scanner] usando WebCamera.takePicture()');
         uri = await cam.takePicture();
       } else if (typeof cam.takePictureAsync === 'function') {
+        console.log('[Scanner] usando CameraView.takePictureAsync()');
         const photo = await cam.takePictureAsync({ quality: 0.8, base64: false });
         uri = photo?.uri ?? null;
+      } else {
+        console.warn('[Scanner] câmera sem método de captura!');
       }
 
-      if (!uri) return;
+      console.log('[Scanner] foto capturada, uri length:', uri?.length ?? 0);
+      if (!uri) { console.warn('[Scanner] URI nulo, abortando'); return; }
 
       const detected = await recognizer.recognize(uri);
-      console.log('[Scanner] OCR detectou:', detected.length, 'figurinhas', detected.map(d => `${d.number} ${d.playerName}`));
+      console.log('[Scanner] detectou:', detected.length, detected.map(d => `${d.number} ${d.playerName}`));
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
       if (mountedRef.current) updateDetections(annotated);
       if (annotated.length > 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    } catch (e) {
+      console.error('[Scanner] erro:', e);
     } finally {
       if (mountedRef.current) setScanning(false);
     }
-  }, [cameraRef, scanning, isOwned, updateDetections, clearDetections]);
+  }, [cameraRef, scanning, ocrReady, isOwned, updateDetections, clearDetections]);
 
   const addNewStickers = useCallback(() => {
     const ids = newStickers.map((s) => s.stickerId);
