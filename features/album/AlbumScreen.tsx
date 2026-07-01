@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import React, { useMemo, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, Pressable, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAlbum } from './useAlbum';
@@ -22,7 +22,9 @@ export function AlbumScreen() {
         keyExtractor={(c: Country) => c.code}
         ListHeaderComponent={<Header stats={stats} progressPercent={progressPercent} />}
         renderItem={({ item }: { item: Country }) => (
-          <CountrySection country={item} ownedIds={ownedIds} onToggle={toggleSticker} />
+          <Reveal>
+            <CountrySection country={item} ownedIds={ownedIds} onToggle={toggleSticker} />
+          </Reveal>
         )}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
@@ -70,6 +72,30 @@ function StatBox({ value, label, accent }: { value: string; label: string; accen
   );
 }
 
+// Anima o card surgindo (fade + leve subida) quando entra na tela ao rolar.
+function Reveal({ children }: { children: React.ReactNode }) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: 380,
+      useNativeDriver: true,
+    }).start();
+  }, [anim]);
+  return (
+    <Animated.View
+      style={{
+        opacity: anim,
+        transform: [
+          { translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) },
+        ],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+}
+
 function CountrySection({ country, ownedIds, onToggle }: {
   country: Country;
   ownedIds: Record<string, boolean>;
@@ -90,7 +116,7 @@ function CountrySection({ country, ownedIds, onToggle }: {
         </View>
         {complete ? (
           <View style={styles.completeBadge}>
-            <Ionicons name="checkmark-circle" size={14} color={C.success} />
+            <Ionicons name="checkmark-circle" size={16} color={C.success} />
             <Text style={styles.completeText}>completo</Text>
           </View>
         ) : (
@@ -118,7 +144,7 @@ function StickerChip({ sticker, owned, onToggle }: { sticker: Sticker; owned: bo
       style={[styles.chip, owned && styles.chipOwned]}
     >
       {owned ? (
-        <Ionicons name="checkmark" size={18} color={C.success} />
+        <Ionicons name="checkmark" size={26} color={C.success} />
       ) : (
         <Text style={styles.chipNum}>{sticker.number === 0 ? '00' : sticker.number}</Text>
       )}
@@ -158,23 +184,23 @@ const styles = StyleSheet.create({
     backgroundColor: C.surface, borderRadius: 16,
     padding: 14, borderWidth: 1, borderColor: C.border,
   },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
-  flag: { fontSize: 24 },
-  countryName: { fontSize: 15, fontWeight: '700', color: C.text },
-  group: { fontSize: 10, color: C.accent, fontWeight: '600', marginTop: 1 },
-  count: { fontSize: 13, color: C.textMuted, fontVariant: ['tabular-nums'], fontWeight: '600' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
+  flag: { fontSize: 36 },
+  countryName: { fontSize: 20, fontWeight: '800', color: C.text, letterSpacing: -0.3 },
+  group: { fontSize: 13, color: C.accent, fontWeight: '600', marginTop: 2 },
+  count: { fontSize: 16, color: C.textMuted, fontVariant: ['tabular-nums'], fontWeight: '700' },
   completeBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: 'rgba(74,222,128,0.14)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20,
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: 'rgba(74,222,128,0.14)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20,
   },
-  completeText: { fontSize: 11, color: C.success, fontWeight: '700' },
+  completeText: { fontSize: 13, color: C.success, fontWeight: '700' },
 
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
   chip: {
-    width: 40, height: 40, borderRadius: 10,
+    width: 54, height: 54, borderRadius: 13,
     borderWidth: 1.5, borderColor: C.border, backgroundColor: 'rgba(0,0,0,0.25)',
     alignItems: 'center', justifyContent: 'center',
   },
   chipOwned: { borderColor: C.success, backgroundColor: 'rgba(74,222,128,0.15)' },
-  chipNum: { fontSize: 14, fontWeight: '700', color: C.textMuted },
+  chipNum: { fontSize: 19, fontWeight: '700', color: C.textMuted },
 });
