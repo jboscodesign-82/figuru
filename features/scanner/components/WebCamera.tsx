@@ -47,28 +47,36 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
 
   useImperativeHandle(ref, () => ({
     async takePicture(): Promise<string | null> {
-      const video = videoRef.current;
-      if (!video) return null;
+      return new Promise((resolve) => {
+        // Use native camera via file input — much better autofocus/quality than canvas capture
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment'; // opens back camera on iOS/Android
 
-      const W = video.videoWidth;
-      const H = video.videoHeight;
-      if (!W || !H) return null;
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (!file) { resolve(null); return; }
 
-      // Step 1: draw raw frame
-      const raw = document.createElement('canvas');
-      raw.width = W;
-      raw.height = H;
-      raw.getContext('2d')!.drawImage(video, 0, 0);
+          // Preprocess: grayscale + contrast boost via canvas
+          const img = new Image();
+          img.src = URL.createObjectURL(file);
+          await new Promise(r => { img.onload = r; });
 
-      // Step 2: apply grayscale + contrast boost for better OCR
-      const processed = document.createElement('canvas');
-      processed.width = W;
-      processed.height = H;
-      const ctx = processed.getContext('2d')!;
-      ctx.filter = 'grayscale(1) contrast(2) brightness(1.1)';
-      ctx.drawImage(raw, 0, 0);
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d')!;
+          ctx.filter = 'grayscale(1) contrast(2) brightness(1.1)';
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(img.src);
 
-      return processed.toDataURL('image/jpeg', 0.92);
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        };
+
+        input.oncancel = () => resolve(null);
+        input.click();
+      });
     },
   }));
 
