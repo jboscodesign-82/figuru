@@ -10,8 +10,8 @@
 //
 // Enquanto estiver em branco, o app funciona só localmente (sem login/nuvem).
 
-export const SUPABASE_URL = '';
-export const SUPABASE_ANON_KEY = '';
+export const SUPABASE_URL = 'https://iedmphamgskkjvdhlutz.supabase.co';
+export const SUPABASE_ANON_KEY = 'sb_publishable_8B1meoUlzN-KU9-yoJOexg_YMZXNMTc';
 
 export const isSupabaseConfigured = () =>
   SUPABASE_URL.length > 0 && SUPABASE_ANON_KEY.length > 0;
