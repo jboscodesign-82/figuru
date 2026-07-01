@@ -2,14 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { createStickerRecognizer } from '@/services/recognition/StickerRecognizer';
+import { getClaudeApiKey } from '@/services/recognition/ClaudeVisionRecognizer';
 import useAlbumStore from '@/store/useAlbumStore';
 import useScannerStore from '@/store/useScannerStore';
 import type { WebCameraHandle } from './components/WebCamera';
 import type { CameraView } from 'expo-camera';
 
 export type CameraRef = React.RefObject<CameraView> | React.RefObject<WebCameraHandle>;
-
-const recognizer = createStickerRecognizer('auto');
 
 export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
   const { isOwned, markOwned } = useAlbumStore();
@@ -18,20 +17,25 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
   const [ocrReady, setOcrReady] = useState(false);
   const [scanning, setScanning] = useState(false);
   const mountedRef = useRef(true);
+  // Recreated on each scan to pick up API key changes without needing page reload
+  const recognizerRef = useRef(createStickerRecognizer('auto'));
 
   useEffect(() => {
     mountedRef.current = true;
-    log(`montado | tem init: ${typeof recognizer.init}`);
     (globalThis as any).__ocrDebug = (text: string) => log(`OCR: "${text.slice(0, 60)}"`);
+
+    const rec = recognizerRef.current;
+    const hasKey = !!getClaudeApiKey();
+    log(`motor: ${hasKey ? 'Claude Vision' : 'Tesseract'}`);
 
     const doInit = async () => {
       try {
-        if (typeof recognizer.init === 'function') {
+        if (typeof rec.init === 'function') {
           log('iniciando OCR...');
-          await recognizer.init();
+          await rec.init();
           log('OCR pronto!');
         } else {
-          log('sem init(), OK');
+          log('pronto!');
         }
         if (mountedRef.current) setOcrReady(true);
       } catch (e: any) {
@@ -69,11 +73,14 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
       log(`uri: ${uri ? uri.slice(0, 40) + '...' : 'NULL'}`);
       if (!uri) return;
 
-      log('reconhecendo...');
+      // Recria recognizer a cada scan para pegar API key salva nas configurações
+      const rec = createStickerRecognizer('auto');
+      const hasKey = !!getClaudeApiKey();
+      log(`reconhecendo via ${hasKey ? 'Claude Vision' : 'Tesseract'}...`);
       const timeout = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('timeout 10s')), 10000)
       );
-      const detected = await Promise.race([recognizer.recognize(uri), timeout]);
+      const detected = await Promise.race([rec.recognize(uri), timeout]);
       log(`detectou ${detected.length} figurinha(s)`);
 
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
