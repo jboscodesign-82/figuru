@@ -16,6 +16,7 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
 
   const [ocrReady, setOcrReady] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState(false);
   const mountedRef = useRef(true);
   // Recreated on each scan to pick up API key changes without needing page reload
   const recognizerRef = useRef(createStickerRecognizer('auto'));
@@ -54,6 +55,7 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
     if (!cameraRef.current) { log('ERR: cam null'); return; }
 
     setScanning(true);
+    setScanError(false);
     clearDetections();
     try {
       const cam = cameraRef.current as any;
@@ -88,6 +90,7 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
       if (annotated.length > 0) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch (e: any) {
       log(`ERR: ${e?.message ?? e}`);
+      if (mountedRef.current) setScanError(true);
     } finally {
       if (mountedRef.current) setScanning(false);
     }
@@ -101,5 +104,5 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
     router.replace('/');
   }, [newStickers, markOwned, clearDetections]);
 
-  return { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers };
+  return { ocrReady, scanning, scanError, detectedStickers, newStickers, scan, addNewStickers };
 }

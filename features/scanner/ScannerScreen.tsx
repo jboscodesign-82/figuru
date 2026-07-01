@@ -25,7 +25,7 @@ export function ScannerScreen() {
   const webCamRef = useRef<WebCameraHandle>(null);
   const cameraRef = Platform.OS === 'web' ? webCamRef : nativeCamRef;
 
-  const { ocrReady, scanning, detectedStickers, newStickers, scan, addNewStickers } =
+  const { ocrReady, scanning, scanError, detectedStickers, newStickers, scan, addNewStickers } =
     useScanner(cameraRef as any, log);
 
   if (Platform.OS !== 'web') {
@@ -113,9 +113,18 @@ export function ScannerScreen() {
 
         {detectedStickers.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              {scanning ? 'Analisando imagem…' : 'Aponte para uma figurinha e escaneie'}
-            </Text>
+            {scanError ? (
+              <>
+                <Text style={styles.emptyText}>Não foi possível reconhecer.</Text>
+                <Pressable style={styles.retryBtn} onPress={scan}>
+                  <Text style={styles.retryBtnText}>Tente novamente</Text>
+                </Pressable>
+              </>
+            ) : (
+              <Text style={styles.emptyText}>
+                {scanning ? 'Analisando imagem…' : 'Aponte para o verso da figurinha e escaneie'}
+              </Text>
+            )}
           </View>
         ) : (
           <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
@@ -266,8 +275,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
-  emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   emptyText: { color: C.textMuted, fontSize: 14, textAlign: 'center' },
+  retryBtn: { backgroundColor: C.accentBlue, paddingHorizontal: 24, paddingVertical: 12, borderRadius: 12 },
+  retryBtnText: { color: '#000', fontWeight: '700', fontSize: 14 },
   list: { flex: 1 },
 
   // Sticker row
