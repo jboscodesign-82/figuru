@@ -81,7 +81,7 @@ function matchCluster(cluster: OcrWord[]): StickerMeta | null {
     // Number match: 1-3 digit sequence matching a sticker number
     const digits = w.text.replace(/\D/g, '');
     const num = parseInt(digits, 10);
-    if (digits.length >= 1 && digits.length <= 3 && num >= 1 && num <= 980 && byNumber.has(num)) {
+    if (digits.length >= 2 && digits.length <= 3 && num >= 10 && num <= 980 && byNumber.has(num)) {
       numberMatch = byNumber.get(num)!;
     }
     // Country code match: e.g. "(ESP)" or "ESP" → narrows pool
