@@ -21,17 +21,28 @@ export function setClaudeApiKey(key: string) {
   } catch { /* noop */ }
 }
 
+// ─── Validation ─────────────────────────────────────────────────────────────
+
+const VALID_CODES = new Set([
+  'MEX','RSA','KOR','CZE','CAN','BIH','QAT','SUI','BRA','MAR','HAI','SCO',
+  'USA','PAR','AUS','TUR','GER','CUW','CIV','ECU','NED','JPN','SWE','TUN',
+  'BEL','EGY','IRN','NZL','ESP','CPV','KSA','URU','FRA','SEN','IRQ','NOR',
+  'ARG','ALG','AUT','JOR','POR','COD','UZB','COL','ENG','CRO','GHA','PAN',
+  'FWC','CC',
+]);
+
+function validateItem(country: string, num: number | null): boolean {
+  if (!VALID_CODES.has(country)) return false;
+  if (num === null) return false;
+  if (country === 'CC') return num >= 1 && num <= 14;
+  if (country === 'FWC') return num >= 0 && num <= 19;
+  return num >= 1 && num <= 20;
+}
+
 // ─── Sticker ID from Claude output ─────────────────────────────────────────
 
-// Builds a stable ID from country + number (e.g. "FRA014").
-// Falls back to normalized name when number is unavailable.
-function buildStickerId(country: string | null | undefined, number: number | null | undefined, name: string): string {
-  const c = (country ?? 'UNK').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
-  if (number && number > 0) {
-    return `${c}${String(number).padStart(3, '0')}`;
-  }
-  const normName = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 12);
-  return `${c}_${normName}`;
+function buildStickerId(country: string, number: number): string {
+  return `${country}${String(number).padStart(3, '0')}`;
 }
 
 // ─── Prompt ────────────────────────────────────────────────────────────────
@@ -117,15 +128,20 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
 
       for (const item of items) {
         const country = (item.country ?? '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
-        if (!country) continue;
-        const num = item.number ?? null;
-        const stickerId = buildStickerId(country, num, item.name ?? country);
+        const num = typeof item.number === 'number' ? Math.round(item.number) : null;
+
+        if (!validateItem(country, num)) {
+          this.log(`ignorado: ${country}#${num} (inválido)`);
+          continue;
+        }
+
+        const stickerId = buildStickerId(country, num!);
         if (seenIds.has(stickerId)) continue;
         seenIds.add(stickerId);
         results.push({
           stickerId,
-          number: num ?? 0,
-          playerName: item.name ?? `${country} #${num ?? '?'}`,
+          number: num!,
+          playerName: `${country} #${num}`,
           country,
           confidence: 0.92,
           isOwned: false,
