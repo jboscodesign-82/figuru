@@ -190,17 +190,34 @@ export class ClaudeVisionRecognizer implements IStickerRecognizer {
         if (!item.name) continue;
         const meta = findBestMatch(item.name, item.number ?? null, item.country ?? null);
         this.log(`match "${item.name}"(${item.number ?? '?'},${item.country ?? '?'}) → ${meta ? meta.playerName : 'NULL'}`);
-        if (!meta || seenIds.has(meta.id)) continue;
-        seenIds.add(meta.id);
-        results.push({
-          stickerId: meta.id,
-          number: meta.number,
-          playerName: meta.playerName,
-          country: meta.country,
-          confidence: 0.92,
-          isOwned: false,
-          boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
-        });
+
+        if (meta && !seenIds.has(meta.id)) {
+          seenIds.add(meta.id);
+          results.push({
+            stickerId: meta.id,
+            number: meta.number,
+            playerName: meta.playerName,
+            country: meta.country,
+            confidence: 0.92,
+            isOwned: false,
+            boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
+          });
+        } else if (!meta) {
+          // Sticker identified by Claude but not found in database — show anyway
+          const fallbackId = `unknown_${normalize(item.name)}`;
+          if (!seenIds.has(fallbackId)) {
+            seenIds.add(fallbackId);
+            results.push({
+              stickerId: fallbackId,
+              number: item.number ?? 0,
+              playerName: item.name,
+              country: item.country ?? '???',
+              confidence: 0.5,
+              isOwned: false,
+              boundingBox: { x: 0.05, y: 0.1, width: 0.9, height: 0.8 },
+            });
+          }
+        }
       }
       if (results.length === 0) this.log('nenhum match encontrado');
       return results;
