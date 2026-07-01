@@ -58,20 +58,26 @@ export const WebCamera = forwardRef<WebCameraHandle>((_, ref) => {
           const file = input.files?.[0];
           if (!file) { resolve(null); return; }
 
-          // Preprocess: grayscale + contrast boost via canvas
           const img = new Image();
           img.src = URL.createObjectURL(file);
           await new Promise(r => { img.onload = r; });
 
+          // Downscale to max 1400px — Tesseract.js trava com imagens 12MP do iPhone
+          const MAX = 1400;
+          const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+          const W = Math.round(img.naturalWidth * scale);
+          const H = Math.round(img.naturalHeight * scale);
+
           const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
+          canvas.width = W;
+          canvas.height = H;
           const ctx = canvas.getContext('2d')!;
-          ctx.filter = 'grayscale(1) contrast(2) brightness(1.1)';
-          ctx.drawImage(img, 0, 0);
+          // Grayscale + contraste para melhorar OCR
+          ctx.filter = 'grayscale(1) contrast(2.5) brightness(1.1)';
+          ctx.drawImage(img, 0, 0, W, H);
           URL.revokeObjectURL(img.src);
 
-          resolve(canvas.toDataURL('image/jpeg', 0.92));
+          resolve(canvas.toDataURL('image/jpeg', 0.90));
         };
 
         input.oncancel = () => resolve(null);

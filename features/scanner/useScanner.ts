@@ -70,7 +70,10 @@ export function useScanner(cameraRef: CameraRef, log: (msg: string) => void) {
       if (!uri) return;
 
       log('reconhecendo...');
-      const detected = await recognizer.recognize(uri);
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('timeout após 20s')), 20000)
+      );
+      const detected = await Promise.race([recognizer.recognize(uri), timeout]);
       log(`detectou ${detected.length} figurinha(s)`);
 
       const annotated = detected.map((d) => ({ ...d, isOwned: isOwned(d.stickerId) }));
