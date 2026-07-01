@@ -12,122 +12,122 @@
             {
               "id": "FWC000",
               "number": 0,
-              "playerName": "Página Inicial",
-              "type": "special"
+              "playerName": "FWC #0",
+              "type": "player"
             },
             {
               "id": "FWC001",
               "number": 1,
               "playerName": "FWC #1",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC002",
               "number": 2,
               "playerName": "FWC #2",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC003",
               "number": 3,
               "playerName": "FWC #3",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC004",
               "number": 4,
               "playerName": "FWC #4",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC005",
               "number": 5,
               "playerName": "FWC #5",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC006",
               "number": 6,
               "playerName": "FWC #6",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC007",
               "number": 7,
               "playerName": "FWC #7",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC008",
               "number": 8,
               "playerName": "FWC #8",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC009",
               "number": 9,
               "playerName": "FWC #9",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC010",
               "number": 10,
               "playerName": "FWC #10",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC011",
               "number": 11,
               "playerName": "FWC #11",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC012",
               "number": 12,
               "playerName": "FWC #12",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC013",
               "number": 13,
               "playerName": "FWC #13",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC014",
               "number": 14,
               "playerName": "FWC #14",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC015",
               "number": 15,
               "playerName": "FWC #15",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC016",
               "number": 16,
               "playerName": "FWC #16",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC017",
               "number": 17,
               "playerName": "FWC #17",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC018",
               "number": 18,
               "playerName": "FWC #18",
-              "type": "special"
+              "type": "player"
             },
             {
               "id": "FWC019",
               "number": 19,
               "playerName": "FWC #19",
-              "type": "special"
+              "type": "player"
             }
           ]
         },
@@ -140,8 +140,8 @@
             {
               "id": "MEX001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "MEX #1",
+              "type": "player"
             },
             {
               "id": "MEX002",
@@ -194,8 +194,8 @@
             {
               "id": "MEX010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "MEX #10",
+              "type": "player"
             },
             {
               "id": "MEX011",
@@ -273,8 +273,8 @@
             {
               "id": "RSA001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "RSA #1",
+              "type": "player"
             },
             {
               "id": "RSA002",
@@ -327,8 +327,8 @@
             {
               "id": "RSA010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "RSA #10",
+              "type": "player"
             },
             {
               "id": "RSA011",
@@ -401,8 +401,8 @@
             {
               "id": "KOR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "KOR #1",
+              "type": "player"
             },
             {
               "id": "KOR002",
@@ -455,8 +455,8 @@
             {
               "id": "KOR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "KOR #10",
+              "type": "player"
             },
             {
               "id": "KOR011",
@@ -534,8 +534,8 @@
             {
               "id": "CZE001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "CZE #1",
+              "type": "player"
             },
             {
               "id": "CZE002",
@@ -588,8 +588,8 @@
             {
               "id": "CZE010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "CZE #10",
+              "type": "player"
             },
             {
               "id": "CZE011",
@@ -662,8 +662,8 @@
             {
               "id": "CAN001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "CAN #1",
+              "type": "player"
             },
             {
               "id": "CAN002",
@@ -716,8 +716,8 @@
             {
               "id": "CAN010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "CAN #10",
+              "type": "player"
             },
             {
               "id": "CAN011",
@@ -795,8 +795,8 @@
             {
               "id": "BIH001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "BIH #1",
+              "type": "player"
             },
             {
               "id": "BIH002",
@@ -849,8 +849,8 @@
             {
               "id": "BIH010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "BIH #10",
+              "type": "player"
             },
             {
               "id": "BIH011",
@@ -923,8 +923,8 @@
             {
               "id": "QAT001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "QAT #1",
+              "type": "player"
             },
             {
               "id": "QAT002",
@@ -977,8 +977,8 @@
             {
               "id": "QAT010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "QAT #10",
+              "type": "player"
             },
             {
               "id": "QAT011",
@@ -1056,8 +1056,8 @@
             {
               "id": "SUI001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "SUI #1",
+              "type": "player"
             },
             {
               "id": "SUI002",
@@ -1110,8 +1110,8 @@
             {
               "id": "SUI010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "SUI #10",
+              "type": "player"
             },
             {
               "id": "SUI011",
@@ -1184,8 +1184,8 @@
             {
               "id": "BRA001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "BRA #1",
+              "type": "player"
             },
             {
               "id": "BRA002",
@@ -1238,8 +1238,8 @@
             {
               "id": "BRA010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "BRA #10",
+              "type": "player"
             },
             {
               "id": "BRA011",
@@ -1317,8 +1317,8 @@
             {
               "id": "MAR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "MAR #1",
+              "type": "player"
             },
             {
               "id": "MAR002",
@@ -1371,8 +1371,8 @@
             {
               "id": "MAR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "MAR #10",
+              "type": "player"
             },
             {
               "id": "MAR011",
@@ -1445,8 +1445,8 @@
             {
               "id": "HAI001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "HAI #1",
+              "type": "player"
             },
             {
               "id": "HAI002",
@@ -1499,8 +1499,8 @@
             {
               "id": "HAI010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "HAI #10",
+              "type": "player"
             },
             {
               "id": "HAI011",
@@ -1578,8 +1578,8 @@
             {
               "id": "SCO001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "SCO #1",
+              "type": "player"
             },
             {
               "id": "SCO002",
@@ -1632,8 +1632,8 @@
             {
               "id": "SCO010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "SCO #10",
+              "type": "player"
             },
             {
               "id": "SCO011",
@@ -1706,8 +1706,8 @@
             {
               "id": "USA001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "USA #1",
+              "type": "player"
             },
             {
               "id": "USA002",
@@ -1760,8 +1760,8 @@
             {
               "id": "USA010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "USA #10",
+              "type": "player"
             },
             {
               "id": "USA011",
@@ -1839,8 +1839,8 @@
             {
               "id": "PAR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "PAR #1",
+              "type": "player"
             },
             {
               "id": "PAR002",
@@ -1893,8 +1893,8 @@
             {
               "id": "PAR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "PAR #10",
+              "type": "player"
             },
             {
               "id": "PAR011",
@@ -1967,8 +1967,8 @@
             {
               "id": "AUS001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "AUS #1",
+              "type": "player"
             },
             {
               "id": "AUS002",
@@ -2021,8 +2021,8 @@
             {
               "id": "AUS010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "AUS #10",
+              "type": "player"
             },
             {
               "id": "AUS011",
@@ -2100,8 +2100,8 @@
             {
               "id": "TUR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "TUR #1",
+              "type": "player"
             },
             {
               "id": "TUR002",
@@ -2154,8 +2154,8 @@
             {
               "id": "TUR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "TUR #10",
+              "type": "player"
             },
             {
               "id": "TUR011",
@@ -2228,8 +2228,8 @@
             {
               "id": "GER001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "GER #1",
+              "type": "player"
             },
             {
               "id": "GER002",
@@ -2282,8 +2282,8 @@
             {
               "id": "GER010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "GER #10",
+              "type": "player"
             },
             {
               "id": "GER011",
@@ -2361,8 +2361,8 @@
             {
               "id": "CUW001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "CUW #1",
+              "type": "player"
             },
             {
               "id": "CUW002",
@@ -2415,8 +2415,8 @@
             {
               "id": "CUW010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "CUW #10",
+              "type": "player"
             },
             {
               "id": "CUW011",
@@ -2489,8 +2489,8 @@
             {
               "id": "CIV001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "CIV #1",
+              "type": "player"
             },
             {
               "id": "CIV002",
@@ -2543,8 +2543,8 @@
             {
               "id": "CIV010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "CIV #10",
+              "type": "player"
             },
             {
               "id": "CIV011",
@@ -2622,8 +2622,8 @@
             {
               "id": "ECU001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "ECU #1",
+              "type": "player"
             },
             {
               "id": "ECU002",
@@ -2676,8 +2676,8 @@
             {
               "id": "ECU010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "ECU #10",
+              "type": "player"
             },
             {
               "id": "ECU011",
@@ -2750,8 +2750,8 @@
             {
               "id": "NED001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "NED #1",
+              "type": "player"
             },
             {
               "id": "NED002",
@@ -2804,8 +2804,8 @@
             {
               "id": "NED010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "NED #10",
+              "type": "player"
             },
             {
               "id": "NED011",
@@ -2883,8 +2883,8 @@
             {
               "id": "JPN001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "JPN #1",
+              "type": "player"
             },
             {
               "id": "JPN002",
@@ -2937,8 +2937,8 @@
             {
               "id": "JPN010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "JPN #10",
+              "type": "player"
             },
             {
               "id": "JPN011",
@@ -3011,8 +3011,8 @@
             {
               "id": "SWE001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "SWE #1",
+              "type": "player"
             },
             {
               "id": "SWE002",
@@ -3065,8 +3065,8 @@
             {
               "id": "SWE010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "SWE #10",
+              "type": "player"
             },
             {
               "id": "SWE011",
@@ -3144,8 +3144,8 @@
             {
               "id": "TUN001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "TUN #1",
+              "type": "player"
             },
             {
               "id": "TUN002",
@@ -3198,8 +3198,8 @@
             {
               "id": "TUN010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "TUN #10",
+              "type": "player"
             },
             {
               "id": "TUN011",
@@ -3272,8 +3272,8 @@
             {
               "id": "BEL001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "BEL #1",
+              "type": "player"
             },
             {
               "id": "BEL002",
@@ -3326,8 +3326,8 @@
             {
               "id": "BEL010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "BEL #10",
+              "type": "player"
             },
             {
               "id": "BEL011",
@@ -3405,8 +3405,8 @@
             {
               "id": "EGY001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "EGY #1",
+              "type": "player"
             },
             {
               "id": "EGY002",
@@ -3459,8 +3459,8 @@
             {
               "id": "EGY010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "EGY #10",
+              "type": "player"
             },
             {
               "id": "EGY011",
@@ -3533,8 +3533,8 @@
             {
               "id": "IRN001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "IRN #1",
+              "type": "player"
             },
             {
               "id": "IRN002",
@@ -3587,8 +3587,8 @@
             {
               "id": "IRN010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "IRN #10",
+              "type": "player"
             },
             {
               "id": "IRN011",
@@ -3666,8 +3666,8 @@
             {
               "id": "NZL001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "NZL #1",
+              "type": "player"
             },
             {
               "id": "NZL002",
@@ -3720,8 +3720,8 @@
             {
               "id": "NZL010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "NZL #10",
+              "type": "player"
             },
             {
               "id": "NZL011",
@@ -3794,8 +3794,8 @@
             {
               "id": "ESP001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "ESP #1",
+              "type": "player"
             },
             {
               "id": "ESP002",
@@ -3848,8 +3848,8 @@
             {
               "id": "ESP010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "ESP #10",
+              "type": "player"
             },
             {
               "id": "ESP011",
@@ -3927,8 +3927,8 @@
             {
               "id": "CPV001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "CPV #1",
+              "type": "player"
             },
             {
               "id": "CPV002",
@@ -3981,8 +3981,8 @@
             {
               "id": "CPV010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "CPV #10",
+              "type": "player"
             },
             {
               "id": "CPV011",
@@ -4055,8 +4055,8 @@
             {
               "id": "KSA001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "KSA #1",
+              "type": "player"
             },
             {
               "id": "KSA002",
@@ -4109,8 +4109,8 @@
             {
               "id": "KSA010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "KSA #10",
+              "type": "player"
             },
             {
               "id": "KSA011",
@@ -4188,8 +4188,8 @@
             {
               "id": "URU001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "URU #1",
+              "type": "player"
             },
             {
               "id": "URU002",
@@ -4242,8 +4242,8 @@
             {
               "id": "URU010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "URU #10",
+              "type": "player"
             },
             {
               "id": "URU011",
@@ -4316,8 +4316,8 @@
             {
               "id": "FRA001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "FRA #1",
+              "type": "player"
             },
             {
               "id": "FRA002",
@@ -4370,8 +4370,8 @@
             {
               "id": "FRA010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "FRA #10",
+              "type": "player"
             },
             {
               "id": "FRA011",
@@ -4449,8 +4449,8 @@
             {
               "id": "SEN001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "SEN #1",
+              "type": "player"
             },
             {
               "id": "SEN002",
@@ -4503,8 +4503,8 @@
             {
               "id": "SEN010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "SEN #10",
+              "type": "player"
             },
             {
               "id": "SEN011",
@@ -4577,8 +4577,8 @@
             {
               "id": "IRQ001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "IRQ #1",
+              "type": "player"
             },
             {
               "id": "IRQ002",
@@ -4631,8 +4631,8 @@
             {
               "id": "IRQ010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "IRQ #10",
+              "type": "player"
             },
             {
               "id": "IRQ011",
@@ -4710,8 +4710,8 @@
             {
               "id": "NOR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "NOR #1",
+              "type": "player"
             },
             {
               "id": "NOR002",
@@ -4764,8 +4764,8 @@
             {
               "id": "NOR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "NOR #10",
+              "type": "player"
             },
             {
               "id": "NOR011",
@@ -4838,8 +4838,8 @@
             {
               "id": "ARG001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "ARG #1",
+              "type": "player"
             },
             {
               "id": "ARG002",
@@ -4892,8 +4892,8 @@
             {
               "id": "ARG010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "ARG #10",
+              "type": "player"
             },
             {
               "id": "ARG011",
@@ -4971,8 +4971,8 @@
             {
               "id": "ALG001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "ALG #1",
+              "type": "player"
             },
             {
               "id": "ALG002",
@@ -5025,8 +5025,8 @@
             {
               "id": "ALG010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "ALG #10",
+              "type": "player"
             },
             {
               "id": "ALG011",
@@ -5099,8 +5099,8 @@
             {
               "id": "AUT001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "AUT #1",
+              "type": "player"
             },
             {
               "id": "AUT002",
@@ -5153,8 +5153,8 @@
             {
               "id": "AUT010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "AUT #10",
+              "type": "player"
             },
             {
               "id": "AUT011",
@@ -5232,8 +5232,8 @@
             {
               "id": "JOR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "JOR #1",
+              "type": "player"
             },
             {
               "id": "JOR002",
@@ -5286,8 +5286,8 @@
             {
               "id": "JOR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "JOR #10",
+              "type": "player"
             },
             {
               "id": "JOR011",
@@ -5360,8 +5360,8 @@
             {
               "id": "POR001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "POR #1",
+              "type": "player"
             },
             {
               "id": "POR002",
@@ -5414,8 +5414,8 @@
             {
               "id": "POR010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "POR #10",
+              "type": "player"
             },
             {
               "id": "POR011",
@@ -5493,8 +5493,8 @@
             {
               "id": "COD001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "COD #1",
+              "type": "player"
             },
             {
               "id": "COD002",
@@ -5547,8 +5547,8 @@
             {
               "id": "COD010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "COD #10",
+              "type": "player"
             },
             {
               "id": "COD011",
@@ -5621,8 +5621,8 @@
             {
               "id": "UZB001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "UZB #1",
+              "type": "player"
             },
             {
               "id": "UZB002",
@@ -5675,8 +5675,8 @@
             {
               "id": "UZB010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "UZB #10",
+              "type": "player"
             },
             {
               "id": "UZB011",
@@ -5754,8 +5754,8 @@
             {
               "id": "COL001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "COL #1",
+              "type": "player"
             },
             {
               "id": "COL002",
@@ -5808,8 +5808,8 @@
             {
               "id": "COL010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "COL #10",
+              "type": "player"
             },
             {
               "id": "COL011",
@@ -5882,8 +5882,8 @@
             {
               "id": "ENG001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "ENG #1",
+              "type": "player"
             },
             {
               "id": "ENG002",
@@ -5936,8 +5936,8 @@
             {
               "id": "ENG010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "ENG #10",
+              "type": "player"
             },
             {
               "id": "ENG011",
@@ -6015,8 +6015,8 @@
             {
               "id": "CRO001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "CRO #1",
+              "type": "player"
             },
             {
               "id": "CRO002",
@@ -6069,8 +6069,8 @@
             {
               "id": "CRO010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "CRO #10",
+              "type": "player"
             },
             {
               "id": "CRO011",
@@ -6143,8 +6143,8 @@
             {
               "id": "GHA001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "GHA #1",
+              "type": "player"
             },
             {
               "id": "GHA002",
@@ -6197,8 +6197,8 @@
             {
               "id": "GHA010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "GHA #10",
+              "type": "player"
             },
             {
               "id": "GHA011",
@@ -6276,8 +6276,8 @@
             {
               "id": "PAN001",
               "number": 1,
-              "playerName": "Escudo",
-              "type": "badge"
+              "playerName": "PAN #1",
+              "type": "player"
             },
             {
               "id": "PAN002",
@@ -6330,8 +6330,8 @@
             {
               "id": "PAN010",
               "number": 10,
-              "playerName": "Foto da Equipe",
-              "type": "team_photo"
+              "playerName": "PAN #10",
+              "type": "player"
             },
             {
               "id": "PAN011",
@@ -6404,86 +6404,86 @@
             {
               "id": "CC001",
               "number": 1,
-              "playerName": "Coca-Cola #1",
-              "type": "special"
+              "playerName": "CC #1",
+              "type": "player"
             },
             {
               "id": "CC002",
               "number": 2,
-              "playerName": "Coca-Cola #2",
-              "type": "special"
+              "playerName": "CC #2",
+              "type": "player"
             },
             {
               "id": "CC003",
               "number": 3,
-              "playerName": "Coca-Cola #3",
-              "type": "special"
+              "playerName": "CC #3",
+              "type": "player"
             },
             {
               "id": "CC004",
               "number": 4,
-              "playerName": "Coca-Cola #4",
-              "type": "special"
+              "playerName": "CC #4",
+              "type": "player"
             },
             {
               "id": "CC005",
               "number": 5,
-              "playerName": "Coca-Cola #5",
-              "type": "special"
+              "playerName": "CC #5",
+              "type": "player"
             },
             {
               "id": "CC006",
               "number": 6,
-              "playerName": "Coca-Cola #6",
-              "type": "special"
+              "playerName": "CC #6",
+              "type": "player"
             },
             {
               "id": "CC007",
               "number": 7,
-              "playerName": "Coca-Cola #7",
-              "type": "special"
+              "playerName": "CC #7",
+              "type": "player"
             },
             {
               "id": "CC008",
               "number": 8,
-              "playerName": "Coca-Cola #8",
-              "type": "special"
+              "playerName": "CC #8",
+              "type": "player"
             },
             {
               "id": "CC009",
               "number": 9,
-              "playerName": "Coca-Cola #9",
-              "type": "special"
+              "playerName": "CC #9",
+              "type": "player"
             },
             {
               "id": "CC010",
               "number": 10,
-              "playerName": "Coca-Cola #10",
-              "type": "special"
+              "playerName": "CC #10",
+              "type": "player"
             },
             {
               "id": "CC011",
               "number": 11,
-              "playerName": "Coca-Cola #11",
-              "type": "special"
+              "playerName": "CC #11",
+              "type": "player"
             },
             {
               "id": "CC012",
               "number": 12,
-              "playerName": "Coca-Cola #12",
-              "type": "special"
+              "playerName": "CC #12",
+              "type": "player"
             },
             {
               "id": "CC013",
               "number": 13,
-              "playerName": "Coca-Cola #13",
-              "type": "special"
+              "playerName": "CC #13",
+              "type": "player"
             },
             {
               "id": "CC014",
               "number": 14,
-              "playerName": "Coca-Cola #14",
-              "type": "special"
+              "playerName": "CC #14",
+              "type": "player"
             }
           ]
         }

@@ -92,11 +92,10 @@ function CountrySection({ country, ownedIds, onToggle }: {
 }
 
 function StickerChip({ sticker, owned, onToggle }: { sticker: Sticker; owned: boolean; onToggle: (id: string) => void }) {
-  const isSpecial = sticker.type === 'badge' || sticker.type === 'team_photo' || sticker.type === 'special';
   return (
     <Pressable
       onPress={() => onToggle(sticker.id)}
-      style={[styles.chip, owned && styles.chipOwned, isSpecial && styles.chipSpecial, owned && isSpecial && styles.chipSpecialOwned]}
+      style={[styles.chip, owned && styles.chipOwned]}
     >
       <Text style={[styles.chipNum, owned && styles.chipNumOwned]}>
         {owned ? '✓' : sticker.number === 0 ? '00' : sticker.number}
